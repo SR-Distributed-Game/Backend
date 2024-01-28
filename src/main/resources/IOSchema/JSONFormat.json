@@ -1,0 +1,25 @@
+{
+  "Format": {
+    "Type": "String",
+    "ClientID": "int",
+    "OnWhat": "string",
+    "Metadata": {
+      "color": "(optional) rgbValue",
+      "position": {
+        "x": "(optional) int",
+        "y": "(optional) int"
+      }
+    }
+  },
+  "Enum": {
+    "Type": [
+      "SpawnObject",
+      "DestroyObject",
+      "UpdateObject"
+    ],
+    "OnWhat": [
+      "Player",
+      "Item"
+    ]
+  }
+}

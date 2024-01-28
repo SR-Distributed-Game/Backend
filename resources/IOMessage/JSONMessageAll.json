@@ -1,0 +1,14 @@
+{
+  "Format": {
+    "Type": "SpawnObject",
+    "ClientID": 12345,
+    "OnWhat": "Player",
+    "Metadata": {
+      "color": "(optional) rgbValue",
+      "position": {
+        "x": "(optional) int",
+        "y": "(optional) int"
+      }
+    }
+  }
+}
