@@ -4,10 +4,10 @@
     "ClientID": 12345,
     "OnWhat": "Player",
     "Metadata": {
-      "color": "(optional) rgbValue",
+      "color": "#ff0000",
       "position": {
-        "x": "(optional) int",
-        "y": "(optional) int"
+        "x": 12,
+        "y": 11
       }
     }
   }

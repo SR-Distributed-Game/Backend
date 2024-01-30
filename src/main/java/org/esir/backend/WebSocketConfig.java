@@ -12,7 +12,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketConfig implements WebSocketConfigurer {
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        decoder decoder = new decoder(new JSONFormat());
+        decoder decoder = new decoder(new JSONFormat("deflaut"));
         registry.addHandler(new SocketTextHandler(), "/echo").setAllowedOrigins("*");
     }
 }

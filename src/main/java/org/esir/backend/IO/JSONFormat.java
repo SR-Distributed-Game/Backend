@@ -1,14 +1,15 @@
 package org.esir.backend.IO;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONTokener;
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +19,12 @@ public class JSONFormat implements IOFormat {
     private String _pathToFormatFile;
     private JSONObject _jsonSchema;
 
-    public JSONFormat() {
-        this._pathToFormatFile = "src/main/resources/IOSchema/JSONFormat.json";
+    public JSONFormat(String pathToFormatFile) {
+        if (Objects.equals(pathToFormatFile, "deflaut")) {
+            this._pathToFormatFile = "src/main/resources/IOSchema/JSONFormat.json";
+        } else {
+            this._pathToFormatFile = pathToFormatFile;
+        }
 
         try {
             InputStream inputStream = Files.newInputStream(Paths.get(_pathToFormatFile));
@@ -42,48 +47,93 @@ public class JSONFormat implements IOFormat {
     }
 
     @Override
-    public void isSchemaCorrect() {
-
-        String[] rootKeys = {"Format", "Enum"};
-        for (String key : rootKeys) {
-            if (!_jsonSchema.has(key)) {
-                throw new RuntimeException("JSON schema file is not correct, missing key: " + key);
-            }
-            if (!(_jsonSchema.get(key) instanceof JSONObject)) {
-                throw new RuntimeException("JSON schema file is not correct, " + key + " is not a JSONObject");
-            }
-        }
-
-
+    public void isSchemaCorrect() throws JSONException {
         JSONObject format = _jsonSchema.getJSONObject("Format");
-        String[] formatKeys = {"Type", "ClientID", "OnWhat", "Metadata"};
-        for (String key : formatKeys) {
-            if (!format.has(key)) {
-                throw new RuntimeException("JSON schema file is not correct, missing key in Format: " + key);
-            }
+        validateFormat(format);
 
-            // Vérifier le type de chaque clé dans "Format"
-            if ("Metadata".equals(key)) {
-                if (!(format.get(key) instanceof JSONObject)) {
-                    throw new RuntimeException("JSON schema file is not correct, " + key + " in Format is not a JSONObject");
-                }
-            } else {
-                if (!(format.get(key) instanceof String)) {
-                    throw new RuntimeException("JSON schema file is not correct, " + key + " in Format is not a String");
-                }
-            }
+        // Valider la structure "Enum"
+        JSONObject enumJson = _jsonSchema.getJSONObject("Enum");
+        validateEnum(enumJson);
+    }
+
+    private static void validateFormat(JSONObject format) throws JSONException {
+        checkField(format, "Type", true);
+        checkValue(format, "Type");
+        checkField(format, "ClientID", true);
+        checkValue(format, "ClientID");
+        checkField(format, "OnWhat", true);
+        checkValue(format, "OnWhat");
+
+        if (format.has("Metadata")) {
+            JSONObject metadata = format.getJSONObject("Metadata");
+            validateMetadata(metadata);
+        }
+    }
+
+    private static void validateMetadata(JSONObject metadata) throws JSONException {
+        checkField(metadata, "color (optional)", false);
+        if (metadata.has("position (optional)")) {
+            JSONObject position = metadata.getJSONObject("position (optional)");
+            checkField(position, "x", true);
+            checkValue(position, "x");
+            checkField(position, "y", true);
+            checkValue(position, "y");
+        }
+    }
+
+    private static void validateEnum(JSONObject enumJson) throws JSONException {
+        checkArray(enumJson, "Type", true);
+        checkArrayOfString(enumJson, "Type");
+        checkArray(enumJson, "OnWhat", true);
+        checkArrayOfString(enumJson, "OnWhat");
+    }
+
+    private static void checkField(JSONObject json, String key, boolean required) throws JSONException {
+        if (!json.has(key)) {
+            throw new JSONException("Le champ obligatoire '" + key + "' est manquant.");
+        }
+        if (key.contains("(optional)") && required) {
+            throw new JSONException("Le champ '" + key + "' ne peut pas être obligatoire.");
+        }
+    }
+
+    private static void checkArray(JSONObject json, String key, boolean required) throws JSONException {
+        if (!json.has(key)) {
+            throw new JSONException("Le tableau '" + key + "' est manquant");
         }
 
-        JSONObject Enum = _jsonSchema.getJSONObject("Enum");
-        String[] enumKeys = {"Type", "OnWhat"};
+        if (!(json.get(key) instanceof JSONArray)) {
+            throw new JSONException("Le champ '" + key + "' n'est pas un tableau.");
+        }
 
-        for (String key : enumKeys) {
-            if (!Enum.has(key)) {
-                throw new RuntimeException("JSON schema file is not correct, missing key in Enum: " + key);
-            }
+        if (key.contains("(optional)") && required) {
+            throw new JSONException("Le tableau '" + key + "' ne peut pas être obligatoire.");
+        }
+    }
 
-            if (!(Enum.get(key) instanceof JSONArray)) {
-                throw new RuntimeException("JSON schema file is not correct, " + key + " in Enum is not a JSONArray");
+    private static void checkValue(JSONObject json, String key) throws JSONException {
+        if (!json.has(key)) {
+            throw new JSONException("Le champ '" + key + "' est manquant");
+        }
+
+        if (!(json.get(key) instanceof String)) {
+            throw new JSONException("Le champ '" + key + "' n'est pas une chaine de caractères.");
+        }
+    }
+
+    private static void checkArrayOfString(JSONObject json, String key) throws JSONException {
+        if (!json.has(key)) {
+            throw new JSONException("Le champ '" + key + "' est manquant");
+        }
+
+        if (!(json.get(key) instanceof JSONArray)) {
+            throw new JSONException("Le champ '" + key + "' n'est pas un tableau.");
+        }
+
+        JSONArray array = json.getJSONArray(key);
+        for (int i = 0; i < array.length(); i++) {
+            if (!(array.get(i) instanceof String)) {
+                throw new JSONException("Le champ '" + key + "' n'est pas un tableau de chaine de caractères.");
             }
         }
     }
@@ -93,22 +143,40 @@ public class JSONFormat implements IOFormat {
     public Boolean IsFormatCorrect(String json) {
         JSONObject jsonObject = new JSONObject(json);
 
-        String[] jsonKeys = JSONObject.getNames(jsonObject);
-        String[] schemaKeys = JSONObject.getNames(_jsonSchema.getJSONObject("Format"));
+        if(!jsonObject.has("Format")) {
+            return false;
+        }
 
-        List<String> schemaKeysList = Arrays.asList(schemaKeys);
+        if (!_jsonSchema.has("Format")) {
+            return false;
+        }
 
-        for (String key : jsonKeys) {
-            if (!schemaKeysList.contains(key)) {
-                boolean isOptional = false;
-                for (String schemaKey : schemaKeys) {
-                    if (schemaKey.contains("(optional)") && schemaKey.startsWith(key)) {
-                        isOptional = true;
-                        break;
-                    }
-                }
+        return isObjectMatch(jsonObject.getJSONObject("Format"), _jsonSchema.getJSONObject("Format"));
+    }
+
+    private boolean isObjectMatch(JSONObject jsonObject, JSONObject schemaObject) {
+        // Convert schema keys to a list for easier manipulation
+        List<String> schemaKeysList = new ArrayList<>(schemaObject.keySet());
+
+        // Iterate through all keys in the schema
+        for (String schemaKey : schemaKeysList) {
+            // Handle optional keys
+            boolean isOptional = schemaKey.contains("(optional)");
+            String actualKey = isOptional ? schemaKey.split("\\s")[0] : schemaKey; // Remove the "(optional)" tag to get the actual key
+
+            // Check presence of key
+            if (!jsonObject.has(actualKey)) {
                 if (!isOptional) {
+                    // Key is missing and it's not optional
+                    System.out.println("Missing key: " + actualKey);
                     return false;
+                }
+            } else {
+                // If the key is present, and it's an object, we need to recursively verify its structure
+                if (schemaObject.get(schemaKey) instanceof JSONObject) {
+                    if (!isObjectMatch(jsonObject.getJSONObject(actualKey), schemaObject.getJSONObject(schemaKey))) {
+                        return false;
+                    }
                 }
             }
         }
