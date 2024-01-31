@@ -1,8 +1,8 @@
 {
   "Format": {
     "Type": "String",
-    "OnWhat": "string",
     "ClientID": "int",
+    "RoomID": "int",
     "Metadata": {
       "color (optional)": "rgbValue",
       "position (optional)": {
@@ -12,10 +12,6 @@
     }
   },
   "Enum": {
-    "Type": "Wrong type",
-    "OnWhat": [
-      "Player",
-      "Item"
-    ]
+    "Type": "Wrong type"
   }
 }

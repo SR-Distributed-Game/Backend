@@ -1,7 +1,7 @@
 {
   "Format": {
     "Type": "String",
-    "OnWhat": "string",
+    "RoomID": "int",
     "Metadata": {
       "color (optional)": "rgbValue",
       "position (optional)": {

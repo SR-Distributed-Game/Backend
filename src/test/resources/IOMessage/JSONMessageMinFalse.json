@@ -1,7 +1,5 @@
 {
-  "Format": {
-    "Type": "DestroyObject",
-    "OnWhat": "Item",
-    "Metadata": {}
-  }
+  "Type": "DestroyObject",
+  "ClientID": 1,
+  "Metadata": {}
 }

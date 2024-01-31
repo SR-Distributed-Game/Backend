@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class JSONFormatTests {
 
     private static final Logger logger = LoggerFactory.getLogger(JSONFormat.class);
-    private final JSONFormat _jsonFormat = new JSONFormat("deflaut");
+    private final JSONFormat _jsonFormat = new JSONFormat("default");
 
 
     @Test

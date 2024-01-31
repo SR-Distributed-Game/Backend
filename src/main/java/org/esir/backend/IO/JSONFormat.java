@@ -1,5 +1,8 @@
 package org.esir.backend.IO;
 
+import org.esir.backend.GameObject.position;
+import org.esir.backend.requests.packet;
+import org.esir.backend.requests.packetCreate;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
@@ -19,7 +22,7 @@ public class JSONFormat implements IOFormat {
     private JSONObject _jsonSchema;
 
     public JSONFormat(String pathToFormatFile) {
-        if (Objects.equals(pathToFormatFile, "deflaut")) {
+        if (Objects.equals(pathToFormatFile, "default")) {
             this._pathToFormatFile = "src/main/resources/IOSchema/JSONFormat.json";
         } else {
             this._pathToFormatFile = pathToFormatFile;
@@ -56,13 +59,69 @@ public class JSONFormat implements IOFormat {
         validateEnum(enumJson);
     }
 
+    @Override
+    public packet FromString(String message) {
+        System.out.println(message);
+        JSONObject jsonObject = new JSONObject(message);
+        switch (jsonObject.get("Type").toString()) {
+            case "SpawnObject" -> {
+
+                position pos = new position(
+                        jsonObject.getJSONObject("Metadata").getJSONObject("position").getInt("x"),
+                        jsonObject.getJSONObject("Metadata").getJSONObject("position").getInt("y"));
+
+                return new packetCreate(
+                        jsonObject.getInt("ClientID"),
+                        jsonObject.getJSONObject("Metadata").getString("Type"),
+                        pos);
+            }
+            case "DestroyObject" -> {
+                logger.error("Error request: " + "DestroyObject is not implemented");
+                return null;
+            }
+            case "UpdateObject" -> {
+                logger.error("Error request: " + "UpdateObject is not implemented");
+                return null;
+            }
+            case "JoinRoom" -> {
+                logger.error("Error request: " + "JoinRoom is not implemented");
+                return null;
+            }
+            case "CreateRoom" -> {
+                logger.error("Error request: " + "CreateRoom is not implemented");
+                return null;
+            }
+            case "ClosingRoom" -> {
+                logger.error("Error request: " + "ClosingRoom is not implemented");
+                return null;
+            }
+            case "LeavingRoom" -> {
+                logger.error("Error request: " + "LeavingRoom is not implemented");
+                return null;
+            }
+            case "ConnectSucces" -> {
+                logger.error("Error request: " + "ConnectSucces is not implemented");
+                return null;
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + jsonObject.get("Type"));
+        }
+
+
+    }
+
+    @Override
+    public String FromPacket(packet packet) {
+        return null;
+    }
+
     private static void validateFormat(JSONObject format) throws JSONException {
         checkField(format, "Type", true);
         checkValue(format, "Type");
         checkField(format, "ClientID", true);
         checkValue(format, "ClientID");
-        checkField(format, "OnWhat", true);
-        checkValue(format, "OnWhat");
+        checkField(format, "RoomID", true);
+        checkValue(format, "RoomID");
+
 
         if (format.has("Metadata")) {
             JSONObject metadata = format.getJSONObject("Metadata");
@@ -84,8 +143,7 @@ public class JSONFormat implements IOFormat {
     private static void validateEnum(JSONObject enumJson) throws JSONException {
         checkArray(enumJson, "Type", true);
         checkArrayOfString(enumJson, "Type");
-        checkArray(enumJson, "OnWhat", true);
-        checkArrayOfString(enumJson, "OnWhat");
+        ;
     }
 
     private static void checkField(JSONObject json, String key, boolean required) throws JSONException {
@@ -140,26 +198,25 @@ public class JSONFormat implements IOFormat {
 
 
     @Override
-    public Boolean IsFormatCorrect(String json) {
-        JSONObject jsonObject = new JSONObject(json);
-
-        if(!jsonObject.has("Format")) {
-            return false;
-        }
+    public Boolean IsFormatCorrect(String message) {
+        JSONObject jsonObject = new JSONObject(message);
 
         if (!_jsonSchema.has("Format")) {
+            logger.error("Error reading JSON schema file: " + "Missing key: Format");
             return false;
         }
 
         if (!_jsonSchema.has("Enum")) {
+            logger.error("Error reading JSON schema file: " + "Missing key: Enum");
             return false;
         }
 
-        if(!isObjectMatch(jsonObject.getJSONObject("Format"), _jsonSchema.getJSONObject("Format"))) {
+        if (!isObjectMatch(jsonObject, _jsonSchema.getJSONObject("Format"))) {
+            logger.error("Error reading JSON schema file: " + "Message format is not correct");
             return false;
         }
 
-        if(!isTypeAndEnumValid(jsonObject.getJSONObject("Format"), _jsonSchema.getJSONObject("Format"), _jsonSchema.getJSONObject("Enum"))) {
+        if (!isTypeAndEnumValid(jsonObject, _jsonSchema.getJSONObject("Format"), _jsonSchema.getJSONObject("Enum"))) {
             return false;
         }
 
@@ -197,7 +254,8 @@ public class JSONFormat implements IOFormat {
     }
 
     private boolean isTypeAndEnumValid(JSONObject jsonObject, JSONObject schemaObject, JSONObject enumObject) {
-          return true;
+        // TODO: Complete this method
+        return true;
     }
 
 }
