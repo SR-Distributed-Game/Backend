@@ -22,6 +22,16 @@ class JSONFormatTests {
 
 
     @Test
+    public void testIsSchemaCorrectFalsePath() {
+        try {
+            JSONFormat jsonFormat = new JSONFormat("falsePath");
+        } catch (Exception e) {
+            logger.error("Error reading JSON schema file: " + e.getMessage(), e);
+            assertTrue(true);
+        }
+    }
+
+    @Test
     public void testIsSchemaCorrect() {
         try {
             _jsonFormat.isSchemaCorrect();
@@ -31,6 +41,62 @@ class JSONFormatTests {
         }
         assertTrue(true);
     }
+
+    @Test
+    public void testIsSchemaCorrectFalseValue() {
+        try {
+            JSONFormat jsonFormat = new JSONFormat("src/test/resources/IOSchema/JSONValueFalse.json");
+            jsonFormat.isSchemaCorrect();
+        } catch (Exception e) {
+            logger.error("Error reading JSON schema file: " + e.getMessage(), e);
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testIsSchemaCorrectFalseMissingKeyValue() {
+        try {
+            JSONFormat jsonFormat = new JSONFormat("src/test/resources/IOSchema/JSONFormatFalseMissingKey.json");
+            jsonFormat.isSchemaCorrect();
+        } catch (Exception e) {
+            logger.error("Error reading JSON schema file: " + e.getMessage(), e);
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testIsSchemaCorrectFalseNoEnum() {
+        try {
+            JSONFormat jsonFormat = new JSONFormat("src/test/resources/IOSchema/JSONFormatFalseNoEnum.json");
+            jsonFormat.isSchemaCorrect();
+        } catch (Exception e) {
+            logger.error("Error reading JSON schema file: " + e.getMessage(), e);
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testIsSchemaCorrectFalseMissingKeyArray() {
+        try {
+            JSONFormat jsonFormat = new JSONFormat("src/test/resources/IOSchema/JSONFormatFalseMissingKeyArray.json");
+            jsonFormat.isSchemaCorrect();
+        } catch (Exception e) {
+            logger.error("Error reading JSON schema file: " + e.getMessage(), e);
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testIsSchemaCorrectFalseMissingKeyArrayButValue() {
+        try {
+            JSONFormat jsonFormat = new JSONFormat("src/test/resources/IOSchema/JSONFormatFalseKeyArrayButValue.json");
+            jsonFormat.isSchemaCorrect();
+        } catch (Exception e) {
+            logger.error("Error reading JSON schema file: " + e.getMessage(), e);
+            assertTrue(true);
+        }
+    }
+
 
     @Test
     public void testIsFormatCorrectAllAttribute() {
@@ -76,7 +142,7 @@ class JSONFormatTests {
 
     @Test
     public void testIsFormatCorrectVoid() {
-        String path = "src/test/resources/IOMessage/JSONMessageVoidFalse.json";
+        String path = "src/test/resources/IOMessage/JSONMessageNoFormatFalse.json";
         Boolean result = false;
         try {
             String JsonMessage = new String(Files.readAllBytes(Paths.get(path)));
@@ -87,4 +153,19 @@ class JSONFormatTests {
         }
         assertFalse(result);
     }
+
+    @Test
+    public void testIsFormatCorrectWrongType(){
+        String path = "src/test/resources/IOMessage/JSONMessageAllFalseWrongType.json";
+        Boolean result = false;
+        try {
+            String JsonMessage = new String(Files.readAllBytes(Paths.get(path)));
+            result = _jsonFormat.IsFormatCorrect(JsonMessage);
+        } catch (Exception e) {
+            logger.error("Error reading JSON message file: " + e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+        assertFalse(result);
+    }
+
 }

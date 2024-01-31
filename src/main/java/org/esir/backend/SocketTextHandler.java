@@ -11,7 +11,7 @@ public class SocketTextHandler extends TextWebSocketHandler {
         String payload = message.getPayload();
         System.out.println("Message reçu: " + payload);
         try {
-            session.sendMessage(new TextMessage("Reçu ! " + payload));
+            session.sendMessage(new TextMessage(payload));
         } catch (Exception e) {
             e.printStackTrace();
         }

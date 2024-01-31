@@ -2,7 +2,7 @@
   "Format": {
     "Type": "String",
     "ClientID": "int",
-    "roomID": "int",
+    "OnWhat": "string",
     "Metadata": {
       "color (optional)": "rgbValue",
       "position (optional)": {
@@ -13,14 +13,13 @@
   },
   "Enum": {
     "Type": [
-      "SpawnObject",
+      1,
       "DestroyObject",
-      "UpdateObject",
-      "JoinRoom",
-      "CreateRoom",
-      "Closing",
-      "LeavingRoom",
-      "ConnectSucces"
+      "UpdateObject"
+    ],
+    "OnWhat": [
+      "Player",
+      "Item"
     ]
   }
 }

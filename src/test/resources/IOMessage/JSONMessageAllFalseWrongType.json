@@ -1,0 +1,14 @@
+{
+  "Format": {
+    "Type": 1,
+    "ClientID": 12345,
+    "OnWhat": "Player",
+    "Metadata": {
+      "color": "#ff0000",
+      "position": {
+        "x": 12,
+        "y": 11
+      }
+    }
+  }
+}

@@ -1,8 +1,7 @@
 {
   "Format": {
     "Type": "String",
-    "ClientID": "int",
-    "roomID": "int",
+    "OnWhat": "string",
     "Metadata": {
       "color (optional)": "rgbValue",
       "position (optional)": {
@@ -15,12 +14,11 @@
     "Type": [
       "SpawnObject",
       "DestroyObject",
-      "UpdateObject",
-      "JoinRoom",
-      "CreateRoom",
-      "Closing",
-      "LeavingRoom",
-      "ConnectSucces"
+      "UpdateObject"
+    ],
+    "OnWhat": [
+      "Player",
+      "Item"
     ]
   }
 }

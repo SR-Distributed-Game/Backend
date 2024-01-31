@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,13 +33,14 @@ public class JSONFormat implements IOFormat {
         } catch (Exception e) {
             logger.error("Error reading JSON schema file: " + e.getMessage(), e);
             System.out.println("Error reading JSON schema file: " + e.getMessage());
+            throw new RuntimeException(e);
         }
 
         try {
             isSchemaCorrect();
         } catch (Exception e) {
             logger.error("Error reading JSON schema file: " + e.getMessage(), e);
-            System.exit(1);
+            throw new RuntimeException(e);
         }
 
         logger.info("JSON schema file is correct");
@@ -151,7 +151,20 @@ public class JSONFormat implements IOFormat {
             return false;
         }
 
-        return isObjectMatch(jsonObject.getJSONObject("Format"), _jsonSchema.getJSONObject("Format"));
+        if (!_jsonSchema.has("Enum")) {
+            return false;
+        }
+
+        if(!isObjectMatch(jsonObject.getJSONObject("Format"), _jsonSchema.getJSONObject("Format"))) {
+            return false;
+        }
+
+        if(!isTypeAndEnumValid(jsonObject.getJSONObject("Format"), _jsonSchema.getJSONObject("Format"), _jsonSchema.getJSONObject("Enum"))) {
+            return false;
+        }
+
+
+        return true;
     }
 
     private boolean isObjectMatch(JSONObject jsonObject, JSONObject schemaObject) {
@@ -162,7 +175,7 @@ public class JSONFormat implements IOFormat {
         for (String schemaKey : schemaKeysList) {
             // Handle optional keys
             boolean isOptional = schemaKey.contains("(optional)");
-            String actualKey = isOptional ? schemaKey.split("\\s")[0] : schemaKey; // Remove the "(optional)" tag to get the actual key
+            String actualKey = isOptional ? schemaKey.split("\\s")[0] : schemaKey;
 
             // Check presence of key
             if (!jsonObject.has(actualKey)) {
@@ -182,4 +195,9 @@ public class JSONFormat implements IOFormat {
         }
         return true;
     }
+
+    private boolean isTypeAndEnumValid(JSONObject jsonObject, JSONObject schemaObject, JSONObject enumObject) {
+          return true;
+    }
+
 }
