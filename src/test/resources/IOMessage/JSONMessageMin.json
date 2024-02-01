@@ -1,6 +1,7 @@
 {
-  "Type": "DestroyObject",
-  "ClientID": 6789,
-  "RoomID": "int",
-  "Metadata": {}
+  "Type": "SpawnObject",
+  "ClientID": 123,
+  "RoomID": 456,
+  "Metadata": {
+  }
 }

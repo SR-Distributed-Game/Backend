@@ -4,10 +4,17 @@
     "ClientID": "int",
     "RoomID": "int",
     "Metadata": {
-      "color (optional)": "rgbValue",
-      "position (optional)": {
-        "x": "int",
-        "y": "int"
+      "playername (optional)": "String",
+      "objectData (optional)": {
+        "color (optional)": "rgbValue",
+        "targetedObjectId":"int",
+        "objectType" : "String",
+        "transform": {
+          "x": "int",
+          "y": "int",
+          "dx":"int",
+          "dy":"int"
+        }
       }
     }
   },

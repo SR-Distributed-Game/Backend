@@ -168,4 +168,19 @@ class JSONFormatTests {
         assertFalse(result);
     }
 
+
+    @Test
+    public void testISFormatCorrectDepthTwo() {
+        String path = "src/test/resources/IOMessage/JSONMessageMinFalse.json";
+        Boolean result = false;
+        try {
+            String JsonMessage = new String(Files.readAllBytes(Paths.get(path)));
+            result = _jsonFormat.IsFormatCorrect(JsonMessage);
+        } catch (Exception e) {
+            logger.error("Error reading JSON message file: " + e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+        assertFalse(result);
+    }
+
 }

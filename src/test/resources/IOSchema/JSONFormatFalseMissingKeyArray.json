@@ -1,20 +1,23 @@
 {
   "Format": {
-    "Type": "String",
-    "ClientID": "int",
-    "RoomID": "int",
+    "Type": "SpawnObject",
+    "ClientID": 123,
+    "RoomID": 456,
     "Metadata": {
-      "color (optional)": "rgbValue",
-      "position (optional)": {
-        "x": "int",
-        "y": "int"
+      "playername": "PlayerOne",
+      "objectData": {
+        "color": "#000000",
+        "targetedObjectId": 789,
+        "objectType": "fruit",
+        "transform": {
+          "x": 100,
+          "y": 200,
+          "dx": 5,
+          "dy": 10
+        }
       }
     }
   },
   "Enum": {
-    "OnWhat": [
-      "Player",
-      "Item"
-    ]
   }
 }

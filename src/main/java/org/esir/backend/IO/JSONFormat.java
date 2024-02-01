@@ -67,12 +67,12 @@ public class JSONFormat implements IOFormat {
             case "SpawnObject" -> {
 
                 position pos = new position(
-                        jsonObject.getJSONObject("Metadata").getJSONObject("position").getInt("x"),
-                        jsonObject.getJSONObject("Metadata").getJSONObject("position").getInt("y"));
+                        jsonObject.getJSONObject("Metadata").getJSONObject("objectData").getJSONObject("transform").getInt("x"),
+                        jsonObject.getJSONObject("Metadata").getJSONObject("objectData").getJSONObject("transform").getInt("y"));
 
                 return new packetCreate(
                         jsonObject.getInt("ClientID"),
-                        jsonObject.getJSONObject("Metadata").getString("Type"),
+                        jsonObject.getJSONObject("Metadata").getJSONObject("objectData").getString("objectType"),
                         pos);
             }
             case "DestroyObject" -> {
@@ -106,7 +106,6 @@ public class JSONFormat implements IOFormat {
             default -> throw new IllegalStateException("Unexpected value: " + jsonObject.get("Type"));
         }
 
-
     }
 
     @Override
@@ -122,22 +121,53 @@ public class JSONFormat implements IOFormat {
         checkField(format, "RoomID", true);
         checkValue(format, "RoomID");
 
-
         if (format.has("Metadata")) {
             JSONObject metadata = format.getJSONObject("Metadata");
             validateMetadata(metadata);
         }
     }
 
+
     private static void validateMetadata(JSONObject metadata) throws JSONException {
-        checkField(metadata, "color (optional)", false);
-        if (metadata.has("position (optional)")) {
-            JSONObject position = metadata.getJSONObject("position (optional)");
-            checkField(position, "x", true);
-            checkValue(position, "x");
-            checkField(position, "y", true);
-            checkValue(position, "y");
+
+        if (metadata.has("Metadata (optional)")) {
+            checkField(metadata, "playername (optional)", false);
+            checkValue(metadata, "playername");
+
+
+            if (metadata.has("objectData (optional)")) {
+                JSONObject objectData = metadata.getJSONObject("objectData (optional)");
+                validateObjectData(objectData);
+            }
+
         }
+    }
+
+    private static void validateObjectData(JSONObject objectData) throws JSONException {
+        checkField(objectData, "targetedObjectId", true);
+        checkValue(objectData, "targetedObjectId");
+
+        checkField(objectData, "objectType", false);
+        checkValue(objectData, "objectType");
+
+        checkField(objectData, "color", false);
+        checkValue(objectData, "color");
+
+        checkField(objectData, "transform", false);
+        JSONObject transform = objectData.getJSONObject("transform");
+        validateTransform(transform);
+
+    }
+
+    private static void validateTransform(JSONObject transform) throws JSONException {
+        checkField(transform, "x", true);
+        checkValue(transform, "x");
+        checkField(transform, "y", true);
+        checkValue(transform, "y");
+        checkField(transform, "dx", true);
+        checkValue(transform, "dx");
+        checkField(transform, "dy", true);
+        checkValue(transform, "dy");
     }
 
     private static void validateEnum(JSONObject enumJson) throws JSONException {

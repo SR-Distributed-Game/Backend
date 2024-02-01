@@ -1,5 +1,4 @@
 package org.esir.backend.IO;
-
 import org.esir.backend.requests.packet;
 
 public interface IOFormat {

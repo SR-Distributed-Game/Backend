@@ -1,5 +1,6 @@
 {
-  "Type": "DestroyObject",
-  "ClientID": 1,
-  "Metadata": {}
+  "Type": "SpawnObject",
+  "ClientID": 123,
+  "Metadata": {
+  }
 }
