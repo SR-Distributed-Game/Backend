@@ -1,6 +1,9 @@
-package org.esir.backend.requests;
+package org.esir.backend.Requests;
 
 import org.esir.backend.GameObject.position;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class packetCreate implements packet{
 
@@ -17,7 +20,7 @@ public class packetCreate implements packet{
 
     @Override
     public String getType() {
-        return "Create";
+        return "SpawnObject";
     }
 
     public int getClientId() {
@@ -42,6 +45,15 @@ public class packetCreate implements packet{
 
     public void setPosition(position Position) {
         _Position = Position;
+    }
+
+    @Override
+    public Map<String, String> toMap() {
+        Map<String, String> map = new HashMap<>();
+        map.put("Type", _Type);
+        map.put("ClientId", Integer.toString(_ClientId));
+        map.put("Position", _Position.toString());
+        return map;
     }
 
 

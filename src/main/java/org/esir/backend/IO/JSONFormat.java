@@ -1,8 +1,8 @@
 package org.esir.backend.IO;
 
 import org.esir.backend.GameObject.position;
-import org.esir.backend.requests.packet;
-import org.esir.backend.requests.packetCreate;
+import org.esir.backend.Requests.packet;
+import org.esir.backend.Requests.packetCreate;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
@@ -67,12 +67,20 @@ public class JSONFormat implements IOFormat {
             case "SpawnObject" -> {
 
                 position pos = new position(
-                        jsonObject.getJSONObject("Metadata").getJSONObject("objectData").getJSONObject("transform").getInt("x"),
-                        jsonObject.getJSONObject("Metadata").getJSONObject("objectData").getJSONObject("transform").getInt("y"));
+                        jsonObject.getJSONObject("Metadata")
+                                .getJSONObject("objectData")
+                                .getJSONObject("transform")
+                                .getInt("x"),
+                        jsonObject.getJSONObject("Metadata")
+                                .getJSONObject("objectData")
+                                .getJSONObject("transform")
+                                .getInt("y"));
 
                 return new packetCreate(
                         jsonObject.getInt("ClientID"),
-                        jsonObject.getJSONObject("Metadata").getJSONObject("objectData").getString("objectType"),
+                        jsonObject.getJSONObject("Metadata")
+                                .getJSONObject("objectData")
+                                .getString("objectType"),
                         pos);
             }
             case "DestroyObject" -> {
@@ -110,7 +118,53 @@ public class JSONFormat implements IOFormat {
 
     @Override
     public String FromPacket(packet packet) {
-        return null;
+        System.out.println("FromPacket");
+        String result = "";
+
+        switch(packet.getType()) {
+            case "SpawnObject" -> {
+                result = createJSONString(packet.toMap());
+            }
+            case "DestroyObject" -> {
+                logger.error("Error request: " + "DestroyObject is not implemented");
+                return null;
+            }
+            case "UpdateObject" -> {
+                logger.error("Error request: " + "UpdateObject is not implemented");
+                return null;
+            }
+            case "JoinRoom" -> {
+                logger.error("Error request: " + "JoinRoom is not implemented");
+                return null;
+            }
+            case "CreateRoom" -> {
+                logger.error("Error request: " + "CreateRoom is not implemented");
+                return null;
+            }
+            case "ClosingRoom" -> {
+                logger.error("Error request: " + "ClosingRoom is not implemented");
+                return null;
+            }
+            case "LeavingRoom" -> {
+                logger.error("Error request: " + "LeavingRoom is not implemented");
+                return null;
+            }
+            case "ConnectSucces" -> {
+                logger.error("Error request: " + "ConnectSucces is not implemented");
+                return null;
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + packet.getType());
+        }
+
+        return result;
+    }
+
+    private static String createJSONString(Map<String, String> map){
+        JSONObject json = new JSONObject();
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            json.put(entry.getKey(), entry.getValue());
+        }
+        return json.toString();
     }
 
     private static void validateFormat(JSONObject format) throws JSONException {

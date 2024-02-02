@@ -1,5 +1,5 @@
 package org.esir.backend.IO;
-import org.esir.backend.requests.packet;
+import org.esir.backend.Requests.packet;
 
 public interface IOFormat {
     public Boolean IsFormatCorrect(String message);
