@@ -3,20 +3,7 @@
     "Type": "String",
     "ClientID": "int",
     "RoomID": "int",
-    "Metadata": {
-      "playername (optional)": "String",
-      "objectData (optional)": {
-        "color (optional)": "rgbValue",
-        "targetedObjectId":"int",
-        "objectType" : "String",
-        "transform": {
-          "x": "int",
-          "y": "int",
-          "dx":"int",
-          "dy":"int"
-        }
-      }
-    }
+    "Metadata": {}
   },
   "Enum": {
     "Type": [

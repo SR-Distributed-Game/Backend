@@ -2,7 +2,8 @@ package org.esir.backend.IO;
 
 import org.esir.backend.GameObject.position;
 import org.esir.backend.Requests.packet;
-import org.esir.backend.Requests.packetCreate;
+import org.esir.backend.Requests.packetConnect;
+import org.esir.backend.Requests.packetJoinRoom;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
@@ -35,7 +36,6 @@ public class JSONFormat implements IOFormat {
 
         } catch (Exception e) {
             logger.error("Error reading JSON schema file: " + e.getMessage(), e);
-            System.out.println("Error reading JSON schema file: " + e.getMessage());
             throw new RuntimeException(e);
         }
 
@@ -61,27 +61,11 @@ public class JSONFormat implements IOFormat {
 
     @Override
     public packet FromString(String message) {
-        System.out.println(message);
         JSONObject jsonObject = new JSONObject(message);
         switch (jsonObject.get("Type").toString()) {
             case "SpawnObject" -> {
-
-                position pos = new position(
-                        jsonObject.getJSONObject("Metadata")
-                                .getJSONObject("objectData")
-                                .getJSONObject("transform")
-                                .getInt("x"),
-                        jsonObject.getJSONObject("Metadata")
-                                .getJSONObject("objectData")
-                                .getJSONObject("transform")
-                                .getInt("y"));
-
-                return new packetCreate(
-                        jsonObject.getInt("ClientID"),
-                        jsonObject.getJSONObject("Metadata")
-                                .getJSONObject("objectData")
-                                .getString("objectType"),
-                        pos);
+                logger.error("Error request: " + "SpawnObject is not implemented");
+                return null;
             }
             case "DestroyObject" -> {
                 logger.error("Error request: " + "DestroyObject is not implemented");
@@ -92,8 +76,10 @@ public class JSONFormat implements IOFormat {
                 return null;
             }
             case "JoinRoom" -> {
-                logger.error("Error request: " + "JoinRoom is not implemented");
-                return null;
+                return new packetJoinRoom(
+                        jsonObject.getInt("ClientID"),
+                        jsonObject.getInt("RoomID"),
+                        jsonObject.getJSONObject("Metadata"));
             }
             case "CreateRoom" -> {
                 logger.error("Error request: " + "CreateRoom is not implemented");
@@ -108,8 +94,10 @@ public class JSONFormat implements IOFormat {
                 return null;
             }
             case "ConnectSucces" -> {
-                logger.error("Error request: " + "ConnectSucces is not implemented");
-                return null;
+                return new packetConnect(
+                        jsonObject.getInt("ClientID"),
+                        jsonObject.getInt("RoomID"),
+                        jsonObject.getJSONObject("Metadata"));
             }
             default -> throw new IllegalStateException("Unexpected value: " + jsonObject.get("Type"));
         }
@@ -118,12 +106,12 @@ public class JSONFormat implements IOFormat {
 
     @Override
     public String FromPacket(packet packet) {
-        System.out.println("FromPacket");
         String result = "";
 
         switch(packet.getType()) {
             case "SpawnObject" -> {
-                result = createJSONString(packet.toMap());
+                logger.error("Error request: " + "SpawnObject is not implemented");
+                return null;
             }
             case "DestroyObject" -> {
                 logger.error("Error request: " + "DestroyObject is not implemented");
@@ -134,8 +122,7 @@ public class JSONFormat implements IOFormat {
                 return null;
             }
             case "JoinRoom" -> {
-                logger.error("Error request: " + "JoinRoom is not implemented");
-                return null;
+                result = packet.toJSONObject().toString();
             }
             case "CreateRoom" -> {
                 logger.error("Error request: " + "CreateRoom is not implemented");
@@ -150,21 +137,12 @@ public class JSONFormat implements IOFormat {
                 return null;
             }
             case "ConnectSucces" -> {
-                logger.error("Error request: " + "ConnectSucces is not implemented");
-                return null;
+                result = packet.toJSONObject().toString();
             }
             default -> throw new IllegalStateException("Unexpected value: " + packet.getType());
         }
 
         return result;
-    }
-
-    private static String createJSONString(Map<String, String> map){
-        JSONObject json = new JSONObject();
-        for (Map.Entry<String, String> entry : map.entrySet()) {
-            json.put(entry.getKey(), entry.getValue());
-        }
-        return json.toString();
     }
 
     private static void validateFormat(JSONObject format) throws JSONException {
@@ -175,59 +153,14 @@ public class JSONFormat implements IOFormat {
         checkField(format, "RoomID", true);
         checkValue(format, "RoomID");
 
-        if (format.has("Metadata")) {
-            JSONObject metadata = format.getJSONObject("Metadata");
-            validateMetadata(metadata);
-        }
+        checkField(format, "Metadata", true);
     }
 
 
-    private static void validateMetadata(JSONObject metadata) throws JSONException {
-
-        if (metadata.has("Metadata (optional)")) {
-            checkField(metadata, "playername (optional)", false);
-            checkValue(metadata, "playername");
-
-
-            if (metadata.has("objectData (optional)")) {
-                JSONObject objectData = metadata.getJSONObject("objectData (optional)");
-                validateObjectData(objectData);
-            }
-
-        }
-    }
-
-    private static void validateObjectData(JSONObject objectData) throws JSONException {
-        checkField(objectData, "targetedObjectId", true);
-        checkValue(objectData, "targetedObjectId");
-
-        checkField(objectData, "objectType", false);
-        checkValue(objectData, "objectType");
-
-        checkField(objectData, "color", false);
-        checkValue(objectData, "color");
-
-        checkField(objectData, "transform", false);
-        JSONObject transform = objectData.getJSONObject("transform");
-        validateTransform(transform);
-
-    }
-
-    private static void validateTransform(JSONObject transform) throws JSONException {
-        checkField(transform, "x", true);
-        checkValue(transform, "x");
-        checkField(transform, "y", true);
-        checkValue(transform, "y");
-        checkField(transform, "dx", true);
-        checkValue(transform, "dx");
-        checkField(transform, "dy", true);
-        checkValue(transform, "dy");
-    }
 
     private static void validateEnum(JSONObject enumJson) throws JSONException {
         checkArray(enumJson, "Type", true);
         checkArrayOfString(enumJson, "Type");
-        ;
     }
 
     private static void checkField(JSONObject json, String key, boolean required) throws JSONException {
@@ -322,7 +255,7 @@ public class JSONFormat implements IOFormat {
             if (!jsonObject.has(actualKey)) {
                 if (!isOptional) {
                     // Key is missing and it's not optional
-                    System.out.println("Missing key: " + actualKey);
+                    logger.error("Error reading JSON schema file: " + "Missing key: " + actualKey);
                     return false;
                 }
             } else {
