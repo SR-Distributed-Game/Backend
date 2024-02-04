@@ -76,17 +76,18 @@ public class PU {
         packet.setClientId(-2);
         packet.setRoomId(-1);
         JSONObject metadata = new JSONObject();
-        metadata.put("playerId", newID); //TODO : change to clientID
+        metadata.put("clientID", newID);
         packet.setMetadata(metadata);
-
         return packet;
     }
+
 
     private packet handleJoinRoom(packet packet) {
         _leaderboard.put(packet.getClientId(), 0);
 
         JSONObject metadata = new JSONObject();
-        metadata.put("playerId", packet.getClientId());
+        metadata.put("leaderboard", _leaderboard);
+        metadata.put("players", _players);
         packet.setMetadata(metadata);
         packet.setRoomId(-1);
         packet.setClientId(-2);
@@ -95,8 +96,14 @@ public class PU {
     }
 
     private packet handleLeavingRoom(packet packet) {
-        ThrowNotHandledException(packet);
-        return null;
+        _leaderboard.remove(packet.getClientId());
+        JSONObject metadata = new JSONObject();
+        metadata.put("leaderboard", _leaderboard);
+        metadata.put("clientID", packet.getClientId());
+        packet.setMetadata(metadata);
+        packet.setRoomId(-1);
+        packet.setClientId(-2);
+        return packet;
     }
 
     private packet handleClosingRoom(packet packet) {

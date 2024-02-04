@@ -81,39 +81,12 @@ public class JSONFormat implements IOFormat {
     public String FromPacket(packet packet) {
         String result = "";
 
-        switch(packet.getType()) {
-            case "SpawnObject" -> {
-                logger.error("Error request: " + "SpawnObject is not implemented");
-                return null;
-            }
-            case "DestroyObject" -> {
-                logger.error("Error request: " + "DestroyObject is not implemented");
-                return null;
-            }
-            case "UpdateObject" -> {
-                logger.error("Error request: " + "UpdateObject is not implemented");
-                return null;
-            }
-            case "JoinRoom" -> {
-                result = packet.toJSONObject().toString();
-            }
-            case "CreateRoom" -> {
-                logger.error("Error request: " + "CreateRoom is not implemented");
-                return null;
-            }
-            case "ClosingRoom" -> {
-                logger.error("Error request: " + "ClosingRoom is not implemented");
-                return null;
-            }
-            case "LeavingRoom" -> {
-                logger.error("Error request: " + "LeavingRoom is not implemented");
-                return null;
-            }
-            case "ConnectSucces" -> {
-                result = packet.toJSONObject().toString();
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + packet.getType());
+        if (!Arrays.asList(AuthorizedRequestType).contains(packet.getType())) {
+            logger.error("Error request: " + "Type is not authorized");
+            throw new IllegalStateException("Unexpected value: " + packet.getType());
         }
+
+        result = packet.toJSONObject().toString();
 
         return result;
     }
