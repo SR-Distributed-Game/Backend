@@ -4,17 +4,20 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
-public abstract class packet {
+public class packet {
 
+
+    private String _Type;
     private int _ClientId;
     private JSONObject _metadata;
 
     private int _RoomId ;
 
-    public packet(int ClientId, int RoomId, JSONObject metadata){
+    public packet(String Type, int ClientId, int RoomId, JSONObject metadata){
         _metadata = metadata;
         _ClientId = ClientId;
         _RoomId = RoomId;
+        _Type = Type;
 
     }
 
@@ -42,7 +45,9 @@ public abstract class packet {
         _metadata = metadata;
     }
 
-    public abstract String getType();
+    public String getType(){
+        return _Type;
+    }
 
     public JSONObject toJSONObject() {
         JSONObject res = new JSONObject();

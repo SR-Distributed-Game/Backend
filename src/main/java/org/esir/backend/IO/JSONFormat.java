@@ -1,9 +1,6 @@
 package org.esir.backend.IO;
 
-import org.esir.backend.GameObject.position;
 import org.esir.backend.Requests.packet;
-import org.esir.backend.Requests.packetConnect;
-import org.esir.backend.Requests.packetJoinRoom;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONTokener;
@@ -21,6 +18,7 @@ public class JSONFormat implements IOFormat {
     private static final Logger logger = LoggerFactory.getLogger(JSONFormat.class);
     private String _pathToFormatFile;
     private JSONObject _jsonSchema;
+    private String[] AuthorizedRequestType = {"SpawnObject", "DestroyObject", "UpdateObject", "JoinRoom", "CreateRoom", "ClosingRoom", "LeavingRoom", "ConnectSucces"};
 
     public JSONFormat(String pathToFormatFile) {
         if (Objects.equals(pathToFormatFile, "default")) {
@@ -62,46 +60,21 @@ public class JSONFormat implements IOFormat {
     @Override
     public packet FromString(String message) {
         JSONObject jsonObject = new JSONObject(message);
-        switch (jsonObject.get("Type").toString()) {
-            case "SpawnObject" -> {
-                logger.error("Error request: " + "SpawnObject is not implemented");
-                return null;
-            }
-            case "DestroyObject" -> {
-                logger.error("Error request: " + "DestroyObject is not implemented");
-                return null;
-            }
-            case "UpdateObject" -> {
-                logger.error("Error request: " + "UpdateObject is not implemented");
-                return null;
-            }
-            case "JoinRoom" -> {
-                return new packetJoinRoom(
-                        jsonObject.getInt("ClientID"),
-                        jsonObject.getInt("RoomID"),
-                        jsonObject.getJSONObject("Metadata"));
-            }
-            case "CreateRoom" -> {
-                logger.error("Error request: " + "CreateRoom is not implemented");
-                return null;
-            }
-            case "ClosingRoom" -> {
-                logger.error("Error request: " + "ClosingRoom is not implemented");
-                return null;
-            }
-            case "LeavingRoom" -> {
-                logger.error("Error request: " + "LeavingRoom is not implemented");
-                return null;
-            }
-            case "ConnectSucces" -> {
-                return new packetConnect(
-                        jsonObject.getInt("ClientID"),
-                        jsonObject.getInt("RoomID"),
-                        jsonObject.getJSONObject("Metadata"));
-            }
-            default -> throw new IllegalStateException("Unexpected value: " + jsonObject.get("Type"));
-        }
+        String type = jsonObject.getString("Type");
 
+        if (!Arrays.asList(AuthorizedRequestType).contains(type)) {
+            logger.error("Error request: " + "Type is not authorized");
+            throw new IllegalStateException("Unexpected value: " + jsonObject.get("Type"));
+        }
+        return getPacketFromJsonObject(jsonObject);
+    }
+
+    private packet getPacketFromJsonObject(JSONObject jsonObject){
+        return new packet(
+                jsonObject.getString("Type"),
+                jsonObject.getInt("ClientID"),
+                jsonObject.getInt("RoomID"),
+                jsonObject.getJSONObject("Metadata"));
     }
 
     @Override

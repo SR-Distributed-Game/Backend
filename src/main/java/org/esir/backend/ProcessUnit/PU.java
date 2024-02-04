@@ -1,13 +1,8 @@
 package org.esir.backend.ProcessUnit;
 
-import ch.qos.logback.core.joran.sanity.Pair;
-import org.esir.backend.IO.JSONFormat;
 import org.esir.backend.Requests.packet;
-import org.esir.backend.Requests.packetConnect;
-import org.esir.backend.Requests.packetJoinRoom;
 import org.esir.backend.Transport.QueueMaster;
 import org.json.JSONObject;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
@@ -15,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.SimpleTimeZone;
 
 
 @Service
@@ -42,33 +36,28 @@ public class PU {
 
             switch (packet.getType()) {
                 case "SpawnObject" -> {
-                    return;
+                    packet = handleSpawnObject(packet);
                 }
                 case "DestroyObject" -> {
-                    log.error("Error request: " + "DestroyObject is not implemented");
-                    return;
+                    packet = handleDestroyObject(packet);
                 }
                 case "UpdateObject" -> {
-                    log.error("Error request: " + "UpdateObject is not implemented");
-                    return;
+                    packet = handleUpdateObject(packet);
                 }
                 case "JoinRoom" -> {
-                    packet = handleJoinRoom((packetJoinRoom) packet);
+                    packet = handleJoinRoom(packet);
                 }
                 case "CreateRoom" -> {
-                    log.error("Error request: " + "CreateRoom is not implemented");
-                    return;
+                    packet = handleCreateRoom(packet);
                 }
                 case "ClosingRoom" -> {
-                    log.error("Error request: " + "ClosingRoom is not implemented");
-                    return;
+                    packet = handleClosingRoom(packet);
                 }
                 case "LeavingRoom" -> {
-                    log.error("Error request: " + "LeavingRoom is not implemented");
-                    return;
+                    packet = handleLeavingRoom(packet);
                 }
                 case "ConnectSucces" -> {
-                    packet = handleConnectSucces((packetConnect) packet);
+                    packet = handleConnectSucces(packet);
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + packet.getType());
             }
@@ -81,10 +70,9 @@ public class PU {
         return _players.size();
     }
 
-    private packet handleConnectSucces(packetConnect packet) {
+    private packet handleConnectSucces(packet packet) {
         int newID = getNewPlayerID();
         _players.put(newID, (packet.getMetadata().getString("playername")));
-
         packet.setClientId(-2);
         packet.setRoomId(-1);
         JSONObject metadata = new JSONObject();
@@ -94,7 +82,7 @@ public class PU {
         return packet;
     }
 
-    private packet handleJoinRoom(packetJoinRoom packet) {
+    private packet handleJoinRoom(packet packet) {
         _leaderboard.put(packet.getClientId(), 0);
 
         JSONObject metadata = new JSONObject();
@@ -106,5 +94,39 @@ public class PU {
         return packet;
     }
 
+    private packet handleLeavingRoom(packet packet) {
+        ThrowNotHandledException(packet);
+        return null;
+    }
+
+    private packet handleClosingRoom(packet packet) {
+        ThrowNotHandledException(packet);
+        return null;
+    }
+
+    private packet handleCreateRoom(packet packet) {
+        ThrowNotHandledException(packet);
+        return null;
+    }
+
+    private packet handleUpdateObject(packet packet) {
+        ThrowNotHandledException(packet);
+        return null;
+    }
+
+    private packet handleDestroyObject(packet packet) {
+        ThrowNotHandledException(packet);
+        return null;
+    }
+
+    private packet handleSpawnObject(packet packet) {
+        ThrowNotHandledException(packet);
+        return null;
+    }
+
+
+    private void ThrowNotHandledException(packet packet) {
+        throw new IllegalStateException("Leading to an unhandled case yet: " + packet.getType());
+    }
 
 }
