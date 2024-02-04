@@ -99,7 +99,7 @@ public class PU {
         _leaderboard.remove(packet.getClientId());
         JSONObject metadata = new JSONObject();
         metadata.put("leaderboard", _leaderboard);
-        metadata.put("clientID", packet.getClientId());
+        metadata.put("players", _players);
         packet.setMetadata(metadata);
         packet.setRoomId(-1);
         packet.setClientId(-2);
