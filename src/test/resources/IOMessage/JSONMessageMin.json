@@ -1,0 +1,7 @@
+{
+  "Type": "SpawnObject",
+  "ClientID": 123,
+  "RoomID": 456,
+  "Metadata": {
+  }
+}

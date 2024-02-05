@@ -1,0 +1,20 @@
+{
+  "Format": {
+    "Type": "String",
+    "ClientID": "int",
+    "RoomID": "int",
+    "Metadata": {}
+  },
+  "Enum": {
+    "Type": [
+      "SpawnObject",
+      "DestroyObject",
+      "UpdateObject",
+      "JoinRoom",
+      "CreateRoom",
+      "Closing",
+      "LeavingRoom",
+      "ConnectSucces"
+    ]
+  }
+}
