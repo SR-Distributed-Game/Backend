@@ -1,5 +1,7 @@
 package org.esir.backend.ProcessUnit;
 
+import org.esir.backend.GameEngine.Game;
+import org.esir.backend.ImplementedGame.SweetGameScene;
 import org.esir.backend.Requests.packet;
 import org.esir.backend.Transport.QueueMaster;
 import org.json.JSONObject;
@@ -17,7 +19,7 @@ public class PU {
 
     private static final Logger log = LoggerFactory.getLogger(PU.class);
 
-    private final QueueMaster queueMaster;
+    //private final QueueMaster queueMaster;
 
     private final Map<Integer, Integer> _leaderboard = new HashMap<>(); // ID, score
 
@@ -25,14 +27,21 @@ public class PU {
 
 
     public PU() {
-        queueMaster = QueueMaster.getInstance();
+        //queueMaster = QueueMaster.getInstance();
+        setupGame();
+    }
+
+
+    private void setupGame() {
+        Game.getInstance().setScene(new SweetGameScene());
+        Game.getInstance().getScene().setRoomId(-1);
     }
 
 
     @Scheduled(fixedRateString = "${pu.fixedRate}")
     public void run() {
-        if (!queueMaster.get_queuePUIn().isEmpty()) {
-            packet packet = queueMaster.get_queuePUIn().poll();
+        if (!QueueMaster.getInstance().get_queuePUIn().isEmpty()) {
+            packet packet = QueueMaster.getInstance().get_queuePUIn().poll();
 
             switch (packet.getType()) {
                 case "SpawnObject" -> {
@@ -61,8 +70,13 @@ public class PU {
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + packet.getType());
             }
-            queueMaster.get_queuePUOut().add(packet);
+            QueueMaster.getInstance().get_queuePUOut().add(packet);
         }
+    }
+
+    @Scheduled(fixedRateString = "1000") //slow for testing purpose
+    public void gameloop() {
+        Game.getInstance().Mupdate();
     }
 
 
@@ -73,7 +87,7 @@ public class PU {
     private packet handleConnectSucces(packet packet) {
         int newID = getNewPlayerID();
         _players.put(newID, (packet.getMetadata().getString("playername")));
-        packet.setClientId(-2);
+        packet.setClientId(-2); //TODO : Debug this, it is not sent to the client
         packet.setRoomId(-1);
         JSONObject metadata = new JSONObject();
         metadata.put("clientID", newID);
