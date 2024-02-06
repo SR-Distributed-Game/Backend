@@ -9,7 +9,7 @@
     "Type": [
       "SpawnObject",
       "DestroyObject",
-      "UpdateObject",
+      1,
       "JoinRoom",
       "CreateRoom",
       "Closing",

@@ -1,4 +1,4 @@
-package org.esir.backend;
+package org.esir.backend.SocketHandler;
 
 import org.esir.backend.Transport.QueueMaster;
 import org.slf4j.Logger;
