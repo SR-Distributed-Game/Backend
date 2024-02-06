@@ -23,29 +23,17 @@ public class SweetGameScene extends Scene {
 
     @Override
     public void update() {
-        packet packet = spawnRandomFruit();
-        QueueMaster.getInstance().get_queuePUOut().add(packet);
+        spawnRandomFruit();
+
     }
 
-
-    private packet spawnRandomFruit(){
+    private void spawnRandomFruit(){
         fruit f = new fruit();
         f.SerializationTest = "TEST FOR SERIALIZATION";
         f.getTransform().getPosition().setX((float)Math.random()*2000);
         f.getTransform().getPosition().setY((float)Math.random()*2000);
         f.getTransform().setScale(new Vector2(10,10));
         f.setId(Game.getInstance().getNewId());
-
-        JSONObject metadata = f.toSerialized();
-        JSONObject ret = new JSONObject();
-
-        ret.put("objectData",metadata);
-        // TODO: this has to be defined in another class / factory
-        packet packet = new packet("SpawnObject",-2,roomId,ret);
-        return packet;
+        addGameObject(f);
     }
-
-
-
-
 }
