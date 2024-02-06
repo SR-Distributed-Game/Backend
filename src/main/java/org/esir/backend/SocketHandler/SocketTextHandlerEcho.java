@@ -1,4 +1,4 @@
-package org.esir.backend;
+package org.esir.backend.SocketHandler;
 
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;

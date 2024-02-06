@@ -1,4 +1,4 @@
-package org.esir.backend;
+package org.esir.backend.SocketHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.WebSocketSession;

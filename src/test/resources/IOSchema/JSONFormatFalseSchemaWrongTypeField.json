@@ -1,6 +1,6 @@
 {
   "Format": {
-    "Type": "String",
+    "Type": 1,
     "ClientID": "Int",
     "RoomID": "Int",
     "Metadata": {}
