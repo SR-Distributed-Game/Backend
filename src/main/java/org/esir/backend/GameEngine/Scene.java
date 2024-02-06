@@ -26,6 +26,10 @@ public class Scene {
     public void update(){};
 
 
+    public HashMap<Integer, GameObject > getGameObjects(){
+        return gameObjects;
+    }
+
     public void addGameObject(GameObject gameObject){
         gameObjects.put(gameObject.getId(),gameObject);
         JSONObject metadata = gameObject.toSerialized();

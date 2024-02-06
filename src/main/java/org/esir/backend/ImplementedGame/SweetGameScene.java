@@ -33,7 +33,6 @@ public class SweetGameScene extends Scene {
         f.getTransform().getPosition().setX((float)Math.random()*2000);
         f.getTransform().getPosition().setY((float)Math.random()*2000);
         f.getTransform().setScale(new Vector2(10,10));
-        f.setId(Game.getInstance().getNewId());
         addGameObject(f);
     }
 }

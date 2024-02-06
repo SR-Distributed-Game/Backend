@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 @Setter
 @Getter
-public class Transform extends JSONObject {
+public class Transform implements JsonSerializable {
 
     @Serializable
     private Vector2 position;
@@ -25,13 +25,19 @@ public class Transform extends JSONObject {
 
 
     @Override
-    public String toString() {
-        return "{" +
-                "position:" + position +
-                ", scale:" + scale +
-                ", rotation:" + rotation +
-                '}';
+    public void updateFromJson(JSONObject json) {
+        position.updateFromJson(json.getJSONObject("position"));
+        scale.updateFromJson(json.getJSONObject("scale"));
+        rotation = json.getFloat("rotation");
     }
 
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("position", position.toJson());
+        json.put("scale", scale.toJson());
+        json.put("rotation", rotation);
+        return json;
+    }
 
 }

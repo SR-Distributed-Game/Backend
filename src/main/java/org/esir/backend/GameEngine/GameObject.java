@@ -9,6 +9,8 @@ public class GameObject extends SerializableGameObject{
     @Serializable
     protected Transform transform = new Transform();
 
+    @Getter
+    @Setter
     @Serializable
     protected String name;
 
@@ -19,7 +21,7 @@ public class GameObject extends SerializableGameObject{
 
     public GameObject(){
         this.name = "GameObject";
-        this.id = 0;
+        this.id = Game.getInstance().getNewId();
     }
 
 

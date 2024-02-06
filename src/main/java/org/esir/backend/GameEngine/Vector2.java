@@ -2,10 +2,11 @@ package org.esir.backend.GameEngine;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.json.JSONObject;
 
 @Getter
 @Setter
-public class Vector2 {
+public class Vector2 implements JsonSerializable{
 
 
     @Serializable
@@ -79,4 +80,19 @@ public class Vector2 {
                 ", y:" + y +
                 '}';
     }
+
+    @Override
+    public void updateFromJson(JSONObject json) {
+        x = json.getFloat("x");
+        y = json.getFloat("y");
+    }
+
+    @Override
+    public JSONObject toJson() {
+        JSONObject json = new JSONObject();
+        json.put("x", x);
+        json.put("y", y);
+        return json;
+    }
+
 }
