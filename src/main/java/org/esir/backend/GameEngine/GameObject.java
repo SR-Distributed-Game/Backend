@@ -19,10 +19,23 @@ public class GameObject extends SerializableGameObject{
     @Serializable
     protected int id;
 
+    protected String Type;
+
     public GameObject(){
         this.name = "GameObject";
-        this.id = Game.getInstance().getNewId();
     }
 
+    public int AcquireNewId(){
+        this.id = Game.getInstance().getNewId();
+        return this.id;
+    }
+
+    public GameObject copy(){
+        GameObject gameObject = new GameObject();
+        gameObject.id = this.id;
+        gameObject.name = this.name;
+        gameObject.transform = this.transform;
+        return gameObject;
+    }
 
 }

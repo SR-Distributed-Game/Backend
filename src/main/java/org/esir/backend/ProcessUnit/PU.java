@@ -70,7 +70,7 @@ public class PU {
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + packet.getType());
             }
-            QueueMaster.getInstance().get_queuePUOut().add(packet);
+            if(packet != null){QueueMaster.getInstance().get_queuePUOut().add(packet);}
         }
     }
 
@@ -136,12 +136,14 @@ public class PU {
     }
 
     private packet handleDestroyObject(packet packet) {
-        ThrowNotHandledException(packet);
+        System.out.println("PU: handleDestroyObject");
+        Game.getInstance().handleDestroyObject(packet);
         return null;
     }
 
     private packet handleSpawnObject(packet packet) {
-        ThrowNotHandledException(packet);
+        System.out.println("PU: handleSpawnObject");
+        Game.getInstance().handleSpawnObject(packet);
         return null;
     }
 

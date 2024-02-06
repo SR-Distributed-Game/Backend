@@ -29,12 +29,19 @@ public class Game {
 
 
 
-    public void handleSpawnObject(packet packet){};
+    public void handleSpawnObject(packet packet){
+        this.scene.handleSpawnObject(packet);
+    };
 
-    public void handleDestroyObject(packet packet){};
+    public void handleDestroyObject(packet packet){
+        this.scene.handleDestroyObject(packet);
+    };
 
     public void handleUpdateObject(packet packet){};
 
+    public void handleSendFullState(packet packet){
+        this.scene.handleSendFullState(packet);
+    };
 
     public int getNewId(){
         return idCounter++;

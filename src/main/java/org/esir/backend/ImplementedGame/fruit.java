@@ -8,6 +8,9 @@ public class fruit extends GameObject {
     @Serializable
     public String SerializationTest;
 
+    public fruit(){
+        this.name = "fruit";
+    }
 
 
 }
