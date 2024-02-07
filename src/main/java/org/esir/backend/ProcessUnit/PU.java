@@ -11,24 +11,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 
 
 @Service
 public class PU {
 
+    private Queue<packet> _waittinToBeProcessed;
+    private Queue<packet> _waittinToBeSent;
     private static final Logger log = LoggerFactory.getLogger(PU.class);
-
-    //private final QueueMaster queueMaster;
-
-    private final Map<Integer, Integer> _leaderboard = new HashMap<>(); // ID, score
-
-    private final Map<Integer, String> _players = new HashMap<>(); // ID, name
+    private final Map<Integer, Integer> _leaderboard = new HashMap<>();
+    private final Map<Integer, String> _players = new HashMap<>();
 
 
     public PU() {
-        //queueMaster = QueueMaster.getInstance();
         setupGame();
+        _waittinToBeProcessed = new LinkedList<>();
+        _waittinToBeSent = new LinkedList<>();
     }
 
 
@@ -37,15 +38,21 @@ public class PU {
         Game.getInstance().getScene().setRoomId(-1);
     }
 
-
-    @Scheduled(fixedRateString = "${pu.fixedRate}")
-    public void run() {
+    @Scheduled(fixedRateString = "${pu.unqueueRate}")
+    public void unqueuePackets() {
         if (!QueueMaster.getInstance().get_queuePUIn().isEmpty()) {
             if (QueueMaster.getInstance().get_queuePUIn().size() == 20) {
                 log.warn("PU: queuePUIn is growing too fast");
             }
-            packet packet = QueueMaster.getInstance().get_queuePUIn().poll();
+            _waittinToBeProcessed.add(QueueMaster.getInstance().get_queuePUIn().poll());
+        }
+    }
 
+
+    @Scheduled(fixedRateString = "${pu.fixedRate}")
+    public void run() {
+        if (!_waittinToBeProcessed.isEmpty()) {
+            packet packet = _waittinToBeProcessed.poll();
             switch (packet.getType()) {
                 case "SpawnObject" -> {
                     packet = handleSpawnObject(packet);
@@ -73,7 +80,17 @@ public class PU {
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + packet.getType());
             }
-            if(packet != null){QueueMaster.getInstance().get_queuePUOut().add(packet);}
+            if(packet != null){_waittinToBeSent.add(packet);}
+        }
+    }
+
+    @Scheduled(fixedRateString = "${pu.queueRate}")
+    public void queuePackets() {
+        if (!_waittinToBeSent.isEmpty()) {
+            if (_waittinToBeSent.size() == 20) {
+                log.warn("PU: queuePUOut is growing too fast");
+            }
+            QueueMaster.getInstance().get_queuePUOut().add(_waittinToBeSent.poll());
         }
     }
 
