@@ -68,7 +68,7 @@ public abstract class SerializableGameObject {
                         subObj.updateFromJson(data.getJSONObject(field.getName()));
                         field.set(this, subObj);
                     } else {
-                        field.set(this, data.get(field.getName())); // Handle primitives and Strings directly
+                        field.set(this, data.get(field.getName()));
                     }
                 } catch (IllegalAccessException | NoSuchMethodException | InstantiationException | InvocationTargetException e) {
                     e.printStackTrace();
@@ -78,35 +78,34 @@ public abstract class SerializableGameObject {
     }
 
     private static boolean isCustomObject(Class<?> type) {
-        // This is a simplistic check; you might need to extend this to handle your specific logic
         return !type.isPrimitive() && !String.class.isAssignableFrom(type) && !Number.class.isAssignableFrom(type) && !Boolean.class.isAssignableFrom(type);
     }
 
     public static <T extends SerializableGameObject> T fromSerialized(Class<T> clazz, JSONObject data) {
-        T instance = null;
+        T instance;
         try {
             instance = clazz.getDeclaredConstructor().newInstance();
             Field[] fields = getAllFields(clazz);
-
             for (Field field : fields) {
                 if (field.isAnnotationPresent(Serializable.class) && data.has(field.getName())) {
-                    Object value = data.get(field.getName());
                     field.setAccessible(true);
+                    Object value = data.get(field.getName());
 
-                    // Determine if the field is a custom object and needs special handling
-                    if (isCustomObject(field.getType())) {
-                        // For custom objects, recursively deserialize
-                        JSONObject subData = data.getJSONObject(field.getName());
-                        Object subInstance = fromSerialized(field.getType().asSubclass(SerializableGameObject.class), subData);
-                        field.set(instance, subInstance);
+                    if (JsonSerializable.class.isAssignableFrom(field.getType())) {
+
+                        JsonSerializable subObj = field.getType().asSubclass(JsonSerializable.class).getDeclaredConstructor().newInstance();
+                        subObj.updateFromJson(new JSONObject(value.toString()));
+                        field.set(instance, subObj);
+                    } else if (isCustomObject(field.getType())) {
+
                     } else {
-                        // For simple fields, just set the value directly
+
                         field.set(instance, value);
                     }
                 }
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error deserializing object", e);
         }
         return instance;
     }
