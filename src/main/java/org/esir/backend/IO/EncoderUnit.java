@@ -21,6 +21,9 @@ public class EncoderUnit {
     @Scheduled(fixedRateString = "${EncoderUnit.fixedRate}")
     public void run(){
         if (!QueueMaster.getInstance().get_queuePUOut().isEmpty()){
+            if (QueueMaster.getInstance().get_queuePUOut().size() == 20){
+                log.warn("EncoderUnit: queuePUOut is growing too fast");
+            }
             packet packet = QueueMaster.getInstance().get_queuePUOut().poll();
 
             encoder.setPacket(packet);

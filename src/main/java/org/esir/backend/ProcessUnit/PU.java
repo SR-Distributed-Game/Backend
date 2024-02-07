@@ -41,6 +41,9 @@ public class PU {
     @Scheduled(fixedRateString = "${pu.fixedRate}")
     public void run() {
         if (!QueueMaster.getInstance().get_queuePUIn().isEmpty()) {
+            if (QueueMaster.getInstance().get_queuePUIn().size() == 20) {
+                log.warn("PU: queuePUIn is growing too fast");
+            }
             packet packet = QueueMaster.getInstance().get_queuePUIn().poll();
 
             switch (packet.getType()) {

@@ -21,6 +21,9 @@ public class DecoderUnit {
     @Scheduled(fixedRateString = "${DecoderUnit.fixedRate}")
     public void run(){
         if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()){
+            if (QueueMaster.getInstance().get_queueDecoderIn().size() == 20){
+                log.warn("DecoderUnit: queueDecoderIn is growing too fast");
+            }
             String payload = QueueMaster.getInstance().get_queueDecoderIn().poll();
 
             decoder.setMessage(payload);
