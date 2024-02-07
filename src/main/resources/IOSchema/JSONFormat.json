@@ -14,7 +14,8 @@
       "CreateRoom",
       "Closing",
       "LeavingRoom",
-      "ConnectSucces"
+      "ConnectSucces",
+      "FullState"
     ]
   }
 }

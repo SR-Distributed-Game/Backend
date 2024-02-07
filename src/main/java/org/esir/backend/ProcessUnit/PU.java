@@ -72,6 +72,9 @@ public class PU {
                 case "ConnectSucces" -> {
                     packet = handleConnectSucces(packet);
                 }
+                case "FullState" -> {
+                    packet = handleFullState(packet);
+                }
                 default -> throw new IllegalStateException("Unexpected value: " + packet.getType());
             }
             if(packet != null){QueueMaster.getInstance().get_queuePUOut().add(packet);}
@@ -150,9 +153,15 @@ public class PU {
         return null;
     }
 
+    private packet handleFullState(packet packet) {
+        Game.getInstance().handleFullState(packet);
+        return null;
+    }
 
     private void ThrowNotHandledException(packet packet) {
         throw new IllegalStateException("Leading to an unhandled case yet: " + packet.getType());
     }
+
+
 
 }

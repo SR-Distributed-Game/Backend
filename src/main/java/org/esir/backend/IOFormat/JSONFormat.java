@@ -26,7 +26,8 @@ public class JSONFormat implements IOFormat {
             "CreateRoom",
             "ClosingRoom",
             "LeavingRoom",
-            "ConnectSucces"
+            "ConnectSucces",
+            "FullState"
     };
 
     public JSONFormat(String pathToFormatFile) {

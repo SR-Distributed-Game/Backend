@@ -44,7 +44,7 @@ public class Game {
 
     public void handleUpdateObject(packet packet){};
 
-    public void handleSendFullState(packet packet){
+    public void handleFullState(packet packet){
         this.scene.handleSendFullState(packet);
     };
 
