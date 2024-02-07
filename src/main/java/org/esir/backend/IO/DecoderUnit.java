@@ -18,12 +18,10 @@ public class DecoderUnit {
     }
 
 
-
     @Scheduled(fixedRateString = "${DecoderUnit.fixedRate}")
     public void run(){
         if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()){
             String payload = QueueMaster.getInstance().get_queueDecoderIn().poll();
-            log.info("DecoderUnit: " + payload);
 
             decoder.setMessage(payload);
 
@@ -33,7 +31,6 @@ public class DecoderUnit {
 
             if (packet != null){
                 QueueMaster.getInstance().get_queuePUIn().add(packet);
-                log.info("DecoderUnit added packet to queuePUIn");
             }
         }
     }

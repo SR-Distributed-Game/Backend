@@ -22,7 +22,6 @@ public class EncoderUnit {
     public void run(){
         if (!QueueMaster.getInstance().get_queuePUOut().isEmpty()){
             packet packet = QueueMaster.getInstance().get_queuePUOut().poll();
-            log.info("EncoderUnit: " + packet.toString());
 
             encoder.setPacket(packet);
 
@@ -32,7 +31,7 @@ public class EncoderUnit {
 
             if (payload != null){
                 QueueMaster.getInstance().get_queueEncoderOut().add(payload);
-                log.info("EncoderUnit added payload to queueEncoderOut");
+
             }
 
         }

@@ -56,12 +56,13 @@ public class GameEngineTests {
     public void testSerializing() {
         GameObject go = new GameObject();
         go.setName("test");
+        go.setId(0);
         go.getTransform().getPosition().setX(1);
         go.getTransform().getPosition().setY(2);
         go.getTransform().getScale().setX(3);
         go.getTransform().getScale().setY(4);
         go.getTransform().setRotation(5);
-        assertEquals(go.toSerialized().toString(), "{\"transform\":{\"rotation\":5,\"scale\":{\"x\":3,\"y\":4},\"position\":{\"x\":1,\"y\":2}},\"Type\":\"GameObject\",\"name\":\"test\",\"id\":1}");
+        assertEquals(go.toSerialized().toString(), "{\"transform\":{\"rotation\":5,\"scale\":{\"x\":3,\"y\":4},\"position\":{\"x\":1,\"y\":2}},\"Type\":\"GameObject\",\"name\":\"test\",\"id\":0}");
     }
 
     @Test
@@ -87,6 +88,7 @@ public class GameEngineTests {
     public void testFromSerialized() {
         TestGameObject go = new TestGameObject();
         go.setName("test");
+        go.setId(0);
         go.getTransform().getPosition().setX(1);
         go.getTransform().getPosition().setY(2);
         go.getTransform().getScale().setX(3);
@@ -99,6 +101,15 @@ public class GameEngineTests {
         assertEquals(go2.getTransform().getScale().getX(), 3);
         assertEquals(go2.getTransform().getScale().getY(), 4);
         assertEquals(go2.getTransform().getRotation(), 5);
+    }
+
+    @Test
+    public void testNewIdGreaterThanPrevious() {
+        GameObject go = new GameObject();
+        GameObject go2 = new GameObject();
+        go.AcquireNewId();
+        go2.AcquireNewId();
+        assertEquals(go.getId() + 1, go2.getId());
     }
 
 

@@ -74,7 +74,7 @@ public class PU {
         }
     }
 
-    @Scheduled(fixedRateString = "1000") //slow for testing purpose
+    @Scheduled(fixedRateString = "${game.fixedRate}")
     public void gameloop() {
         Game.getInstance().Mupdate();
     }
@@ -136,13 +136,12 @@ public class PU {
     }
 
     private packet handleDestroyObject(packet packet) {
-        System.out.println("PU: handleDestroyObject");
         Game.getInstance().handleDestroyObject(packet);
         return null;
     }
 
     private packet handleSpawnObject(packet packet) {
-        System.out.println("PU: handleSpawnObject");
+
         Game.getInstance().handleSpawnObject(packet);
         return null;
     }
