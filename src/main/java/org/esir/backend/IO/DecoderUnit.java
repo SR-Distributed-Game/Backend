@@ -11,12 +11,9 @@ import org.springframework.stereotype.Service;
 public class DecoderUnit {
     private static final Logger log = LoggerFactory.getLogger(DecoderUnit.class);
 
-    private QueueMaster queueMaster;
-
     private decoder decoder;
 
     public DecoderUnit() {
-        queueMaster = QueueMaster.getInstance();
         decoder = new decoder(new JSONFormat("default"));
     }
 
@@ -24,8 +21,8 @@ public class DecoderUnit {
 
     @Scheduled(fixedRateString = "${DecoderUnit.fixedRate}")
     public void run(){
-        if (!queueMaster.get_queueDecoderIn().isEmpty()){
-            String payload = queueMaster.get_queueDecoderIn().poll();
+        if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()){
+            String payload = QueueMaster.getInstance().get_queueDecoderIn().poll();
             log.info("DecoderUnit: " + payload);
 
             decoder.setMessage(payload);
@@ -35,7 +32,7 @@ public class DecoderUnit {
             packet packet = decoder.getPackets();
 
             if (packet != null){
-                queueMaster.get_queuePUIn().add(packet);
+                QueueMaster.getInstance().get_queuePUIn().add(packet);
                 log.info("DecoderUnit added packet to queuePUIn");
             }
         }

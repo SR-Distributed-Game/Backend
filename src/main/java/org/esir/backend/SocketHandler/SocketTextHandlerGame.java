@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SocketTextHandlerGame extends TextWebSocketHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(SocketTextHandlerGame.class);
-    private final QueueMaster queueMaster = QueueMaster.getInstance();
 
     private ConcurrentHashMap<String, WebSocketSession> sessions;
 
@@ -30,7 +29,7 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
         String payload = message.getPayload();
         logger.info("SocketTextHandlerGame: " + payload);
-        queueMaster.get_queueDecoderIn().add(payload);
+        QueueMaster.getInstance().get_queueDecoderIn().add(payload);
     }
 
     @Override
@@ -49,8 +48,8 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
 
     @Scheduled(fixedRateString = "${SocketTextHandlerGame.fixedRate}")
     public void sendMessage() {
-        if (!queueMaster.get_queueEncoderOut().isEmpty()) {
-            String payload = queueMaster.get_queueEncoderOut().poll();
+        if (!QueueMaster.getInstance().get_queueEncoderOut().isEmpty()) {
+            String payload = QueueMaster.getInstance().get_queueEncoderOut().poll();
             sessions.values().forEach(session -> sendMessageToSession(session, payload));
         }
     }
