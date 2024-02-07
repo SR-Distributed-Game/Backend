@@ -130,7 +130,7 @@ public class PU {
     }
 
     private packet handleUpdateObject(packet packet) {
-        ThrowNotHandledException(packet);
+        Game.getInstance().handleUpdateObject(packet);
         return null;
     }
 

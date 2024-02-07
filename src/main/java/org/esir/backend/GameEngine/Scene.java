@@ -12,8 +12,11 @@ import java.util.HashMap;
 
 public class Scene extends GameObject{
 
+    @Getter
+    TypeRegistry typeRegistry = new TypeRegistry();
+
     @Serializable
-    HashMap<Integer, GameObject > gameObjects = new HashMap<Integer, GameObject>();
+    GameObjecthashmap gameObjects = new GameObjecthashmap();
 
     @Getter
     @Setter
@@ -28,11 +31,11 @@ public class Scene extends GameObject{
     }
 
     @Override
-    public void start(){};
+    public void start(){}
 
 
     @Override
-    public void end(){};
+    public void end(){}
 
     @Override
     public void Mend(){
@@ -40,7 +43,7 @@ public class Scene extends GameObject{
             gameObject.Mend();
         }
         end();
-    };
+    }
 
     @Override
     public void Mupdate(float dt){
@@ -48,11 +51,11 @@ public class Scene extends GameObject{
             gameObject.Mupdate(dt);
         }
         update(dt);
-    };
+    }
 
     @Override
     public void update(float dt){
-    };
+    }
 
 
     public HashMap<Integer, GameObject > getGameObjects(){
@@ -93,12 +96,34 @@ public class Scene extends GameObject{
 
     }
 
+    public void updateGameObject(GameObject gameObject) {
+
+        JSONObject metadata = gameObject.toSerialized();
+        JSONObject ret = new JSONObject();
+        ret.put("objectData",metadata);
+        packet packet = new packet("UpdateObject",-2,roomId,ret);
+        QueueMaster.getInstance().get_queuePUOut().add(packet);
+
+    }
+
     public void handleSpawnObject(packet packet){
         JSONObject objectData = packet.getMetadata().getJSONObject("objectData");
-        Class<? extends GameObject> cls = getClassBasedOnString(objectData.getString("Type"));
+        Class<? extends GameObject> cls = (Class<? extends GameObject>) this.typeRegistry.getType(objectData.getString("Type"));
         GameObject gameObject = GameObject.fromSerialized(cls, objectData);
         gameObject.AcquireNewId();
         addGameObject(cls.cast(gameObject));
+    }
+
+    public void handleUpdateObject(packet packet){
+        JSONObject objectData = packet.getMetadata().getJSONObject("objectData");
+        int id = objectData.getInt("id");
+
+        GameObject gameObject = gameObjects.get(id);
+
+        if (gameObject != null){
+            gameObject.updateFromRequest(objectData);
+            updateGameObject(gameObject);
+        }
     }
 
     public void handleDestroyObject(packet packet){
@@ -106,7 +131,7 @@ public class Scene extends GameObject{
         removeGameObject(id);
     }
 
-public void handleSendFullState(packet packet){
+    public void handleSendFullState(packet packet){
         JSONObject ret = new JSONObject();
         JSONObject objectData = new JSONObject();
         for (GameObject gameObject : gameObjects.values()){
@@ -115,15 +140,6 @@ public void handleSendFullState(packet packet){
         ret.put("objectData",objectData);
         packet packet1 = new packet("FullState",-2,roomId,ret);
         QueueMaster.getInstance().get_queuePUOut().add(packet1);
-    }
-
-    private Class<? extends GameObject> getClassBasedOnString(String type){
-        switch (type){
-            case "fruit":
-                return fruit.class;
-            default:
-                return fruit.class;
-        }
     }
 
 

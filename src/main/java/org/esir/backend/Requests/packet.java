@@ -55,7 +55,7 @@ public class packet {
         res.put("Type", getType());
         res.put("ClientId", Integer.toString(getClientId()));
         res.put("RoomId", Integer.toString(getRoomId()));
-        res.put("metadata", getMetadata());
+        res.put("Metadata", getMetadata());
 
         return res;
     }

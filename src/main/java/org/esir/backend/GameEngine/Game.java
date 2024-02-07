@@ -42,7 +42,11 @@ public class Game {
         this.scene.handleDestroyObject(packet);
     };
 
-    public void handleUpdateObject(packet packet){};
+    public void handleUpdateObject(packet packet){
+        this.scene.handleUpdateObject(packet);
+    };
+
+
 
     public void handleFullState(packet packet){
         this.scene.handleSendFullState(packet);

@@ -17,7 +17,9 @@ public class SweetGameScene extends Scene {
 
     @Override
     public void start() {
-
+        // super important for the serialization
+        this.getTypeRegistry().registerType("fruit",fruit.class);
+        this.getTypeRegistry().registerType("player",player.class);
     }
 
     @Override
