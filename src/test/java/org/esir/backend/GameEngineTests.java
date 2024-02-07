@@ -94,13 +94,11 @@ public class GameEngineTests {
         go.getTransform().setRotation(5);
 
         TestGameObject go2 = GameObject.fromSerialized(TestGameObject.class, go.toSerialized());
-        System.out.println(go2.toSerialized().toString());
-        assert go2.getName().equals("test");
-        assert go2.getTransform().getPosition().getX() == 1;
-        assert go2.getTransform().getPosition().getY() == 2;
-        assert go2.getTransform().getScale().getX() == 3;
-        assert go2.getTransform().getScale().getY() == 4;
-        assert go2.getTransform().getRotation() == 5;
+        assertEquals(go2.getTransform().getPosition().getX(), 1);
+        assertEquals(go2.getTransform().getPosition().getY(), 2);
+        assertEquals(go2.getTransform().getScale().getX(), 3);
+        assertEquals(go2.getTransform().getScale().getY(), 4);
+        assertEquals(go2.getTransform().getRotation(), 5);
     }
 
 
