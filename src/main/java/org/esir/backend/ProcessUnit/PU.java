@@ -35,6 +35,7 @@ public class PU {
     private void setupGame() {
         Game.getInstance().setScene(new SweetGameScene());
         Game.getInstance().getScene().setRoomId(-1);
+        Game.getInstance().getScene().Mstart();
     }
 
 
@@ -79,7 +80,7 @@ public class PU {
 
     @Scheduled(fixedRateString = "${game.fixedRate}")
     public void gameloop() {
-        Game.getInstance().Mupdate();
+        Game.getInstance().Mupdate(50);
     }
 
 

@@ -19,12 +19,17 @@ public class Game {
         return instance;
     }
 
-    protected void start(){};
+    protected void start(){
+        this.scene.Mstart();
+    };
 
-    public void end(){};
+    protected void end(){
+        this.scene.Mend();
+    };
 
-    public void Mupdate(){
-        this.scene.Mupdate();
+
+    public void Mupdate(float dt){
+        this.scene.Mupdate(dt);
     }
 
 

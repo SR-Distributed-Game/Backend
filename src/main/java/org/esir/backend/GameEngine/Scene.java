@@ -10,21 +10,49 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-public class Scene {
+public class Scene extends GameObject{
+
+    @Serializable
     HashMap<Integer, GameObject > gameObjects = new HashMap<Integer, GameObject>();
 
     @Getter
     @Setter
     protected int roomId;
+
+    @Override
+    public void Mstart(){
+        for (GameObject gameObject : gameObjects.values()) {
+            gameObject.Mstart();
+        }
+        start();
+    }
+
+    @Override
     public void start(){};
 
+
+    @Override
     public void end(){};
 
-    public void Mupdate(){
-        update();
+    @Override
+    public void Mend(){
+        for (GameObject gameObject : gameObjects.values()) {
+            gameObject.Mend();
+        }
+        end();
     };
 
-    public void update(){};
+    @Override
+    public void Mupdate(float dt){
+        for (GameObject gameObject : gameObjects.values()) {
+            gameObject.Mupdate(dt);
+        }
+        update(dt);
+    };
+
+    @Override
+    public void update(float dt){
+    };
 
 
     public HashMap<Integer, GameObject > getGameObjects(){
@@ -32,6 +60,7 @@ public class Scene {
     }
 
     public void addGameObject(GameObject gameObject){
+        gameObject.Mstart();
         gameObjects.put(gameObject.getId(),gameObject);
         JSONObject metadata = gameObject.toSerialized();
         JSONObject ret = new JSONObject();
@@ -48,8 +77,10 @@ public class Scene {
 
     public void removeGameObject(int id){
         GameObject gameObject = gameObjects.get(id);
+
         if (gameObject == null)
             return;
+        gameObject.Mend();
         gameObject = gameObject.copy();
         gameObjects.remove(id);
 
@@ -94,5 +125,7 @@ public void handleSendFullState(packet packet){
                 return fruit.class;
         }
     }
+
+
 
 }
