@@ -10,6 +10,10 @@ import org.json.JSONObject;
 
 public class SweetGameScene extends Scene {
 
+    private float spawnRateSecond = 1000f;
+    private float spawnTimer = 0.0f;
+
+    private int maxFruit = 400;
 
     @Override
     public void start() {
@@ -22,9 +26,14 @@ public class SweetGameScene extends Scene {
     }
 
     @Override
-    public void update() {
-        spawnRandomFruit();
+    public void update(float dt) {
+        if(spawnTimer == 0.0f){
+            if(fruit.getFruitCount() < maxFruit){
+                spawnRandomFruit();
+            }
 
+        }
+        spawnTimer = (spawnTimer + dt)%spawnRateSecond;
     }
 
     private void spawnRandomFruit(){

@@ -30,6 +30,25 @@ public class GameObject extends SerializableGameObject{
         return this.id;
     }
 
+    public void Mstart(){
+        start();
+    };
+
+    public void start(){};
+
+    public void Mupdate(float dt){
+        update(dt);
+    };
+
+    public void Mend(){
+        end();
+    };
+
+    public void end(){};
+
+    public void update(float dt){};
+
+
     public GameObject copy(){
         GameObject gameObject = new GameObject();
         gameObject.id = this.id;
