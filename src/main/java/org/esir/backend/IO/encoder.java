@@ -28,7 +28,6 @@ public class encoder extends IO{
 
     @Override
     public void run() {
-        logger.info("Received packet");
         _message = format.FromPacket(_packet);
     }
 

@@ -29,7 +29,6 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
         String payload = message.getPayload();
-        logger.info("SocketTextHandlerGame: " + payload);
         queueMaster.get_queueDecoderIn().add(payload);
     }
 
@@ -37,14 +36,12 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
         sessions.put(session.getId(), session);
-        logger.info("New WebSocket session established with ID: " + session.getId());
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         super.afterConnectionClosed(session, status);
         sessions.remove(session.getId());
-        logger.info("WebSocket session closed with ID: " + session.getId());
     }
 
     @Scheduled(fixedRateString = "${SocketTextHandlerGame.fixedRate}")
@@ -59,7 +56,6 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
     public void sendMessageToSession(WebSocketSession session, String payload) {
         if (session != null && session.isOpen()) {
             try {
-                logger.info("SocketTextHandlerGame: sending message " +  payload);
                 session.sendMessage(new TextMessage(payload));
             } catch (IOException e) {
                 logger.error("Error sending message", e);
