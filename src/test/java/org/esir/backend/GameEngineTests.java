@@ -4,8 +4,13 @@ import org.esir.backend.GameEngine.Game;
 import org.esir.backend.GameEngine.GameObject;
 import org.esir.backend.GameEngine.Scene;
 import org.esir.backend.GameEngine.Transform;
+import org.esir.backend.IOFormat.JSONFormat;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @SpringBootTest
@@ -22,13 +27,13 @@ public class GameEngineTests {
     @Test
     public void testTransformGetX() {
         Transform t = new Transform();
-        assert t.getPosition().getX() == 0;
+        assertEquals(t.getPosition().getX(), 0);
     }
 
     @Test
     public void testSceneAddGameObject() {
         scene.addGameObject(new GameObject());
-        assert scene.getGameObjects().size() == 1;
+        assertEquals(scene.getGameObjects().size(), 1);
     }
 
     @Test
@@ -36,14 +41,14 @@ public class GameEngineTests {
         GameObject go = new GameObject();
         scene.addGameObject(go);
         scene.removeGameObject(go.getId());
-        assert scene.getGameObjects().size() == 0;
+        assertEquals(scene.getGameObjects().size(), 0);
     }
 
     @Test
     public void testSceneGetGameObject() {
         GameObject go = new GameObject();
         scene.addGameObject(go);
-        assert scene.getGameObject(go.getId()) == go;
+        assertEquals(scene.getGameObject(go.getId()), go);
     }
 
     @Test
@@ -55,8 +60,7 @@ public class GameEngineTests {
         go.getTransform().getScale().setX(3);
         go.getTransform().getScale().setY(4);
         go.getTransform().setRotation(5);
-        System.out.println(go.toSerialized().toString());
-        assert go.toSerialized().toString().equals("{\"transform\":{\"rotation\":5,\"scale\":{\"x\":3,\"y\":4},\"position\":{\"x\":1,\"y\":2}},\"Type\":\"GameObject\",\"name\":\"test\",\"id\":2}");
+        assertEquals(go.toSerialized().toString(), "{\"transform\":{\"rotation\":5,\"scale\":{\"x\":3,\"y\":4},\"position\":{\"x\":1,\"y\":2}},\"Type\":\"GameObject\",\"name\":\"test\",\"id\":1}");
     }
 
     @Test
@@ -70,13 +74,12 @@ public class GameEngineTests {
         go.getTransform().setRotation(5);
         GameObject go2 = new GameObject();
         go2.updateFromRequest(go.toSerialized());
-        System.out.println(go2.toSerialized().toString());
-        assert go2.getName().equals("test");
-        assert go2.getTransform().getPosition().getX() == 1;
-        assert go2.getTransform().getPosition().getY() == 2;
-        assert go2.getTransform().getScale().getX() == 3;
-        assert go2.getTransform().getScale().getY() == 4;
-        assert go2.getTransform().getRotation() == 5;
+        assertEquals(go2.getName(), "test");
+        assertEquals(go2.getTransform().getPosition().getX(), 1);
+        assertEquals(go2.getTransform().getPosition().getY(), 2);
+        assertEquals(go2.getTransform().getScale().getX(), 3);
+        assertEquals(go2.getTransform().getScale().getY(), 4);
+        assertEquals(go2.getTransform().getRotation(), 5);
     }
 
 
