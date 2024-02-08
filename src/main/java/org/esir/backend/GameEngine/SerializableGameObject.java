@@ -45,7 +45,7 @@ public abstract class SerializableGameObject {
     }
 
     private boolean isCustomObject(Object value) {
-        return value != null && !(value instanceof String || value instanceof Number || value instanceof Boolean || value.getClass().isPrimitive());
+        return value != null && !(value instanceof String || value instanceof Number || value instanceof Boolean || value instanceof JSONObject || value.getClass().isPrimitive());
     }
 
     private static Field[] getAllFields(Class<?> type) {

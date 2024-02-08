@@ -1,5 +1,6 @@
 package org.esir.backend.ImplementedGame;
 
+import org.esir.backend.GameEngine.Components.ColliderComponent;
 import org.esir.backend.GameEngine.GameObject;
 import org.esir.backend.GameEngine.Serializable;
 
@@ -9,9 +10,26 @@ public class fruit extends GameObject {
     @Serializable
     public String SerializationTest;
 
+    @Serializable
+    public int lifeTime =1;
+
+
+    public int getLifeTime(){
+
+        return lifeTime--;
+    }
+
     public fruit(){
         this.name = "fruit";
+        this.lifeTime = 1;
         fruit.fruitCount++;
+        this.addComponent(new ColliderComponent(this));
+    }
+
+    @Override
+    public void start() {
+        this.lifeTime = 1;
+        this.setTag("fruit");
     }
 
     @Override

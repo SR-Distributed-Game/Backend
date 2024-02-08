@@ -8,9 +8,15 @@ import org.esir.backend.Requests.packet;
 public class Game {
 
     static Game instance ;
-    protected Scene scene;
-    protected int roomId;
-    protected int idCounter = 0;
+    private Scene scene;
+    private int roomId;
+    private int idCounter = 0;
+    private CollisionSystem collisionSystem;
+
+
+    private Game(){
+        this.collisionSystem = new SpatialHashmap(100);
+    }
 
     public static Game getInstance() {
         if (instance == null) {
@@ -18,6 +24,11 @@ public class Game {
         }
         return instance;
     }
+
+    public CollisionSystem getCollisionSystem(){
+        return collisionSystem;
+    }
+
 
     protected void start(){
         this.scene.Mstart();
@@ -29,7 +40,9 @@ public class Game {
 
 
     public void Mupdate(float dt){
+        this.collisionSystem.clear();
         this.scene.Mupdate(dt);
+        this.collisionSystem.update();
     }
 
 

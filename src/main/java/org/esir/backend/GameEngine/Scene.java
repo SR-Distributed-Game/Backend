@@ -8,6 +8,7 @@ import org.esir.backend.Requests.packet;
 import org.esir.backend.Transport.QueueMaster;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Scene extends GameObject{
@@ -17,6 +18,23 @@ public class Scene extends GameObject{
 
     @Serializable
     GameObjecthashmap gameObjects = new GameObjecthashmap();
+
+    HashMap<String,ArrayList<GameObject>> gameObjectsByTag = new HashMap<>();
+
+    public ArrayList<GameObject> getGameObjectWithTag(String tag){
+        return gameObjectsByTag.get(tag);
+    }
+
+    public void addGameObjectWithTag(GameObject gameObject){
+        if (gameObjectsByTag.get(gameObject.getTag()) == null){
+            gameObjectsByTag.put(gameObject.getTag(),new ArrayList<>());
+        }
+        gameObjectsByTag.get(gameObject.getTag()).add(gameObject);
+    }
+
+    public void removeGameObjectWithTag(GameObject gameObject){
+        gameObjectsByTag.get(gameObject.getTag()).remove(gameObject);
+    }
 
     @Getter
     @Setter
@@ -47,14 +65,24 @@ public class Scene extends GameObject{
 
     @Override
     public void Mupdate(float dt){
+        ArrayList<Integer> toRemove = new ArrayList<>();
         for (GameObject gameObject : gameObjects.values()) {
+            if (gameObject.isDestroyed()){
+                toRemove.add(gameObject.getId());
+                continue;
+            }
             gameObject.Mupdate(dt);
+
+        }
+        for (int id : toRemove){
+            removeGameObject(id);
         }
         update(dt);
     }
 
     @Override
     public void update(float dt){
+
     }
 
 
@@ -63,8 +91,10 @@ public class Scene extends GameObject{
     }
 
     public void addGameObject(GameObject gameObject){
+        gameObject.scene = this;
         gameObject.Mstart();
         gameObjects.put(gameObject.getId(),gameObject);
+        addGameObjectWithTag(gameObject);
         JSONObject metadata = gameObject.toSerialized();
         JSONObject ret = new JSONObject();
 
@@ -81,11 +111,15 @@ public class Scene extends GameObject{
     public void removeGameObject(int id){
         GameObject gameObject = gameObjects.get(id);
 
+
         if (gameObject == null)
             return;
         gameObject.Mend();
+        removeGameObjectWithTag(gameObject);
         gameObject = gameObject.copy();
+
         gameObjects.remove(id);
+
 
         JSONObject metadata = gameObject.toSerialized();
         JSONObject ret = new JSONObject();
@@ -97,13 +131,11 @@ public class Scene extends GameObject{
     }
 
     public void updateGameObject(GameObject gameObject) {
-
         JSONObject metadata = gameObject.toSerialized();
         JSONObject ret = new JSONObject();
         ret.put("objectData",metadata);
         packet packet = new packet("UpdateObject",-2,roomId,ret);
         QueueMaster.getInstance().get_queuePUOut().add(packet);
-
     }
 
     public void handleSpawnObject(packet packet){
@@ -141,7 +173,6 @@ public class Scene extends GameObject{
         packet packet1 = new packet("FullState",-2,roomId,ret);
         QueueMaster.getInstance().get_queuePUOut().add(packet1);
     }
-
 
 
 }

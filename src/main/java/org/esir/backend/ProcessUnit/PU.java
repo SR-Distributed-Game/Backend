@@ -27,8 +27,6 @@ public class PU {
     public PU() {
         setupGame();
     }
-
-
     private void setupGame() {
         Game.getInstance().setScene(new SweetGameScene());
         Game.getInstance().getScene().setRoomId(-1);

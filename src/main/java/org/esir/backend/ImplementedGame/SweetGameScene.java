@@ -1,11 +1,9 @@
 package org.esir.backend.ImplementedGame;
 
-import org.esir.backend.GameEngine.Game;
 import org.esir.backend.GameEngine.Scene;
 import org.esir.backend.GameEngine.Vector2;
-import org.esir.backend.Requests.packet;
-import org.esir.backend.Transport.QueueMaster;
-import org.json.JSONObject;
+import org.esir.backend.ImplementedGame.fruit;
+import org.esir.backend.ImplementedGame.player;
 
 
 public class SweetGameScene extends Scene {
@@ -20,6 +18,14 @@ public class SweetGameScene extends Scene {
         // super important for the serialization
         this.getTypeRegistry().registerType("fruit",fruit.class);
         this.getTypeRegistry().registerType("player",player.class);
+        this.getTypeRegistry().registerType("Leaderboard",Leaderboard.class);
+
+        addGameObject(new Leaderboard());
+
+        for (int i = 0; i < 100; i++) {
+            spawnRandomFruit();
+        }
+
     }
 
     @Override
@@ -48,4 +54,6 @@ public class SweetGameScene extends Scene {
         f.AcquireNewId();
         addGameObject(f);
     }
+
+
 }

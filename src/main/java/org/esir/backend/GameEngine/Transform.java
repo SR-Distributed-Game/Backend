@@ -40,4 +40,11 @@ public class Transform implements JsonSerializable {
         return json;
     }
 
+    public boolean intersects(Transform other){
+        return position.getX() < other.position.getX() + other.scale.getX() &&
+                position.getX() + scale.getX() > other.position.getX() &&
+                position.getY() < other.position.getY() + other.scale.getY() &&
+                position.getY() + scale.getY() > other.position.getY();
+    }
+
 }
