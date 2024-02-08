@@ -32,9 +32,9 @@ public class DecoderUnit {
     public void run(){
         if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()){
 
-            if (QueueMaster.getInstance().get_queueDecoderIn().size() == 20){
-                log.warn("EncoderUnit: queuePUIN is growing too fast");
-                log.warn("EncoderUnit: queuePUIN size: " + QueueMaster.getInstance().get_queueDecoderIn().size());
+            if (QueueMaster.getInstance().get_queueDecoderIn().size() >= 20){
+                log.warn("EncoderUnit: queueDecodeIN is growing too fast");
+                log.warn("EncoderUnit: queueDecodeIN size: " + QueueMaster.getInstance().get_queueDecoderIn().size());
             }
 
             List<String> payload = new ArrayList<String>();

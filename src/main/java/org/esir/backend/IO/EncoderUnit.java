@@ -66,7 +66,7 @@ public class EncoderUnit {
         String message = encoder.getMessage();
 
         while (IdOnProcess.get() != idThread);
-        if (message != null) QueueMaster.getInstance().get_queueEncoderOut().add(message);
+        if (message != null && !message.isEmpty()) QueueMaster.getInstance().get_queueEncoderOut().add(message);
         IdOnProcess.incrementAndGet();
     }
 
