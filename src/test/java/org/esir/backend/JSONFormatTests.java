@@ -258,7 +258,7 @@ class JSONFormatTests {
     public void testFromPacket() {
         packet packet = new packet("SpawnObject", 1, 1, new JSONObject());
         String message = jsonFormatGood.FromPacket(packet);
-        assertEquals("{\"Type\":\"SpawnObject\",\"metadata\":{},\"ClientId\":\"1\",\"RoomId\":\"1\"}", message);
+        assertEquals("{\"Type\":\"SpawnObject\",\"Metadata\":{},\"ClientId\":\"1\",\"RoomId\":\"1\"}", message);
     }
 
     @Test
