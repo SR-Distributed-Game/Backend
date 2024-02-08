@@ -31,6 +31,7 @@ public class decoder extends IO {
         else {
             _packet = null;
             logger.error("Error reading JSON schema file: " + "Message format is not correct");
+            logger.error("Message: " + _message);
         }
     }
 

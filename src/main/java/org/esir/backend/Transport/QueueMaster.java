@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
 @Getter
@@ -15,13 +16,13 @@ public class QueueMaster {
 
     private static QueueMaster instance = null;
 
-    private final Queue<String> _queueDecoderIn = new LinkedList<String>();
+    private final Queue<String> _queueDecoderIn = new ConcurrentLinkedQueue<String>();
 
-    private final Queue<packet> _queuePUIn = new LinkedList<packet>();
+    private final Queue<packet> _queuePUIn = new ConcurrentLinkedQueue<packet>();
 
-    private final Queue<packet> _queuePUOut = new LinkedList<packet>();
+    private final Queue<packet> _queuePUOut = new ConcurrentLinkedQueue<packet>();
 
-    private final Queue<String> _queueEncoderOut = new LinkedList<String>();
+    private final Queue<String> _queueEncoderOut = new ConcurrentLinkedQueue<String>();
 
     private QueueMaster() {
     }
