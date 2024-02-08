@@ -14,7 +14,7 @@ public class player extends GameObject {
 
     public player(){
         this.points = 0;
-        this.speed = 1;
+        this.speed = 5;
         this.AcquireNewId();
     }
 
