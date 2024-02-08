@@ -39,6 +39,8 @@ public class Game {
     };
 
     public void handleDestroyObject(packet packet){
+        System.out.println("destroying object");
+        System.out.println(packet.getMetadata().toString());
         this.scene.handleDestroyObject(packet);
     };
 
