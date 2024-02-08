@@ -34,6 +34,7 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
+        logger.info("New session: " + session.getId());
         sessions.put(session.getId(), session);
     }
 

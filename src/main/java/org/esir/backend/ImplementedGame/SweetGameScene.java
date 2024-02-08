@@ -32,6 +32,7 @@ public class SweetGameScene extends Scene {
         if(spawnTimer == 0.0f){
             if(fruit.getFruitCount() < maxFruit){
                 spawnRandomFruit();
+
             }
 
         }

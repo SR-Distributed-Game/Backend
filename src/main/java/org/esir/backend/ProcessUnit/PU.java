@@ -39,6 +39,9 @@ public class PU {
     public void run() {
         if (!QueueMaster.getInstance().get_queuePUIn().isEmpty()) {
             packet packet = QueueMaster.getInstance().get_queuePUIn().poll();
+            if (packet == null) {
+                return;
+            }
             switch (packet.getType()) {
                 case "SpawnObject" -> {
                     packet = handleSpawnObject(packet);
@@ -140,7 +143,6 @@ public class PU {
     }
 
     private packet handleSpawnObject(packet packet) {
-
         Game.getInstance().handleSpawnObject(packet);
         return null;
     }
