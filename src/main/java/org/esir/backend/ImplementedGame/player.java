@@ -52,6 +52,7 @@ public class player extends GameObject {
     }
 
 
+
     @Override
     public void onCollisionEnter(ColliderComponent other) {
         if(other.getParent().getTag().equals("fruit")){

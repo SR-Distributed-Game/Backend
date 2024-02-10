@@ -1,9 +1,12 @@
 package org.esir.backend.ImplementedGame;
 
+import org.esir.backend.GameEngine.GameObject;
 import org.esir.backend.GameEngine.Scene;
 import org.esir.backend.GameEngine.Vector2;
 import org.esir.backend.ImplementedGame.fruit;
 import org.esir.backend.ImplementedGame.player;
+
+import java.util.ArrayList;
 
 
 public class SweetGameScene extends Scene {
@@ -38,11 +41,31 @@ public class SweetGameScene extends Scene {
         if(spawnTimer == 0.0f){
             if(fruit.getFruitCount() < maxFruit){
                 spawnRandomFruit();
-
             }
-
         }
         spawnTimer = (spawnTimer + dt)%spawnRateSecond;
+
+        ArrayList<GameObject> players = getGameObjectWithTag("player");
+        if (players != null) {
+            //handle player out of map
+            /*
+            for (GameObject p : players) {
+                if (p.getTransform().getPosition().getX() > 2000) {
+                    System.out.println("Player out of map");
+                    p.getTransform().getPosition().setX(2000);
+                }
+                if (p.getTransform().getPosition().getX() < 0) {
+                    p.getTransform().getPosition().setX(0);
+                }
+                if (p.getTransform().getPosition().getY() > 2000) {
+                    p.getTransform().getPosition().setY(2000);
+                }
+                if (p.getTransform().getPosition().getY() < 0) {
+                    p.getTransform().getPosition().setY(0);
+                }
+            }*/
+        }
+
     }
 
     private void spawnRandomFruit(){

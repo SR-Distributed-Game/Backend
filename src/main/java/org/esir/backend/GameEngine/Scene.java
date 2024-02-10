@@ -21,7 +21,7 @@ public class Scene extends GameObject{
 
     HashMap<String,ArrayList<GameObject>> gameObjectsByTag = new HashMap<>();
 
-    public ArrayList<GameObject> getGameObjectWithTag(String tag){
+    public ArrayList<GameObject> getGameObjectWithTag(String tag ){
         return gameObjectsByTag.get(tag);
     }
 
