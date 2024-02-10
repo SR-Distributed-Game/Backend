@@ -12,13 +12,10 @@ public class Leaderboard extends GameObject {
     @Serializable
     private JSONObject leaderboard;
 
-    @Serializable
-    int playercount;
 
     public Leaderboard(){
         this.leaderboard = new JSONObject();
         this.AcquireNewId();
-        playercount = 0;
     }
 
     @Override
@@ -40,6 +37,7 @@ public class Leaderboard extends GameObject {
 
     public void updateScore(int id, int score){
         this.leaderboard.put(Integer.toString(id), score);
+        System.out.println("Leaderboard updated");
         updateSyncState();
     }
 

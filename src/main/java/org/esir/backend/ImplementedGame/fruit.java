@@ -11,25 +11,25 @@ public class fruit extends GameObject {
     public String SerializationTest;
 
     @Serializable
-    public int lifeTime =1;
+    public int lifeTime;
 
 
     public int getLifeTime(){
-
-        return lifeTime--;
+        return lifeTime;
     }
 
     public fruit(){
         this.name = "fruit";
         this.lifeTime = 1;
         fruit.fruitCount++;
-        this.addComponent(new ColliderComponent(this));
+
     }
 
     @Override
     public void start() {
         this.lifeTime = 1;
         this.setTag("fruit");
+        this.addComponent(new ColliderComponent(this));
     }
 
     @Override

@@ -3,9 +3,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.esir.backend.Requests.packet;
 
+import java.io.Console;
+import java.util.ArrayList;
+
 @Setter
 @Getter
-public class Game {
+public class Game extends RequestAccepter {
 
     static Game instance ;
     private Scene scene;
@@ -40,11 +43,34 @@ public class Game {
 
 
     public void Mupdate(float dt){
+
+        this.handleRemoteRequests();
         this.collisionSystem.clear();
         this.scene.Mupdate(dt);
         this.collisionSystem.update();
+
     }
 
+    @Override
+    public void handleRemoteRequests(){
+        for(packet p : remoteRequests){
+            switch (p.getType()){
+                case "SpawnObject":
+                    this.handleSpawnObject(p);
+                    break;
+                case "DestroyObject":
+                    this.handleDestroyObject(p);
+                    break;
+                case "UpdateObject":
+                    this.handleUpdateObject(p);
+                    break;
+                case "FullState":
+                    this.handleFullState(p);
+                    break;
+            }
+        }
+        remoteRequests.clear();
+    }
 
 
     public void handleSpawnObject(packet packet){
@@ -58,7 +84,6 @@ public class Game {
     public void handleUpdateObject(packet packet){
         this.scene.handleUpdateObject(packet);
     };
-
 
 
     public void handleFullState(packet packet){

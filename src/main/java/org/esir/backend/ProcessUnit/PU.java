@@ -120,6 +120,7 @@ public class PU {
         return packet;
     }
 
+
     private packet handleClosingRoom(packet packet) {
         ThrowNotHandledException(packet);
         return null;
@@ -131,22 +132,22 @@ public class PU {
     }
 
     private packet handleUpdateObject(packet packet) {
-        Game.getInstance().handleUpdateObject(packet);
+        Game.getInstance().acceptRequest(packet);
         return null;
     }
 
     private packet handleDestroyObject(packet packet) {
-        Game.getInstance().handleDestroyObject(packet);
+        Game.getInstance().acceptRequest(packet);
         return null;
     }
 
     private packet handleSpawnObject(packet packet) {
-        Game.getInstance().handleSpawnObject(packet);
+        Game.getInstance().acceptRequest(packet);
         return null;
     }
 
     private packet handleFullState(packet packet) {
-        Game.getInstance().handleFullState(packet);
+        Game.getInstance().acceptRequest(packet);
         return null;
     }
 
