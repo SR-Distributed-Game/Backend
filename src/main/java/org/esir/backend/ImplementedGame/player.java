@@ -46,7 +46,7 @@ public class player extends GameObject {
     }
 
     public void setPoints(int points) {
-
+        this.points = points;
         this.getTransform().getScale().setX(sizeFunction(points));
         this.getTransform().getScale().setY(sizeFunction(points));
     }
@@ -56,13 +56,8 @@ public class player extends GameObject {
     public void onCollisionEnter(ColliderComponent other) {
         if(other.getParent().getTag().equals("fruit")){
             fruit otherFruit = (fruit) other.getParent();
-
-            this.points = this.points+1;
-            System.out.println("Player " + this.getId() + " has " + this.points + " points");
-             this.setPoints(this.points);
-
+             this.setPoints(this.points+ otherFruit.getLifeTime());
             ((Leaderboard)scene.getGameObjectWithTag("Leaderboard").getFirst()).updateScore(this.getId(), this.getPoints());
-
             otherFruit.destroy();
             updateSyncState();
         } else if (other.getParent().getTag().equals("player")){
@@ -70,6 +65,7 @@ public class player extends GameObject {
             if(p.getId() != this.getId()){
                 if(p.getPoints() > this.getPoints()){
                     this.hasBeenEaten = true;
+                    this.destroy();
                     updateSyncState();
                 }
             }

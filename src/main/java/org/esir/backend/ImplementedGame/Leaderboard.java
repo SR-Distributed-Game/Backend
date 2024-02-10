@@ -37,7 +37,6 @@ public class Leaderboard extends GameObject {
 
     public void updateScore(int id, int score){
         this.leaderboard.put(Integer.toString(id), score);
-        System.out.println("Leaderboard updated");
         updateSyncState();
     }
 
