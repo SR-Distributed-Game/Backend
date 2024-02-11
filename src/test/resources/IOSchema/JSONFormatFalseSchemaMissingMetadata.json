@@ -2,8 +2,7 @@
   "Format": {
     "Type": "String",
     "ClientID": "Int",
-    "RoomID": "Int",
-    "Metadata": {}
+    "RoomID": "Int"
   },
   "Enum": {
     "Type": [
@@ -14,8 +13,7 @@
       "CreateRoom",
       "Closing",
       "LeavingRoom",
-      "ConnectSucces",
-      "FullState"
+      "ConnectSucces"
     ]
   }
 }

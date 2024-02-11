@@ -1,5 +1,7 @@
 package org.esir.backend.ProcessUnit;
 
+import org.esir.backend.GameEngine.Game;
+import org.esir.backend.ImplementedGame.SweetGameScene;
 import org.esir.backend.Requests.packet;
 import org.esir.backend.Transport.QueueMaster;
 import org.json.JSONObject;
@@ -9,31 +11,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 
 
 @Service
 public class PU {
 
     private static final Logger log = LoggerFactory.getLogger(PU.class);
-
-    private final QueueMaster queueMaster;
-
-    private final Map<Integer, Integer> _leaderboard = new HashMap<>(); // ID, score
-
-    private final Map<Integer, String> _players = new HashMap<>(); // ID, name
+    private final Map<Integer, Integer> _leaderboard = new HashMap<>();
+    private final Map<Integer, String> _players = new HashMap<>();
 
 
     public PU() {
-        queueMaster = QueueMaster.getInstance();
+        setupGame();
     }
-
+    private void setupGame() {
+        Game.getInstance().setScene(new SweetGameScene());
+        Game.getInstance().getScene().setRoomId(-1);
+        Game.getInstance().getScene().Mstart();
+    }
 
     @Scheduled(fixedRateString = "${pu.fixedRate}")
     public void run() {
-        if (!queueMaster.get_queuePUIn().isEmpty()) {
-            packet packet = queueMaster.get_queuePUIn().poll();
-
+        if (!QueueMaster.getInstance().get_queuePUIn().isEmpty()) {
+            packet packet = QueueMaster.getInstance().get_queuePUIn().poll();
+            if (packet == null) {
+                return;
+            }
             switch (packet.getType()) {
                 case "SpawnObject" -> {
                     packet = handleSpawnObject(packet);
@@ -59,10 +65,18 @@ public class PU {
                 case "ConnectSucces" -> {
                     packet = handleConnectSucces(packet);
                 }
+                case "FullState" -> {
+                    packet = handleFullState(packet);
+                }
                 default -> throw new IllegalStateException("Unexpected value: " + packet.getType());
             }
-            queueMaster.get_queuePUOut().add(packet);
+            if(packet != null){QueueMaster.getInstance().get_queuePUOut().add(packet);}
         }
+    }
+
+    @Scheduled(fixedRateString = "${game.fixedRate}")
+    public void gameloop() {
+        Game.getInstance().Mupdate(50);
     }
 
 
@@ -73,7 +87,7 @@ public class PU {
     private packet handleConnectSucces(packet packet) {
         int newID = getNewPlayerID();
         _players.put(newID, (packet.getMetadata().getString("playername")));
-        packet.setClientId(-2);
+        packet.setClientId(-2); //TODO : Debug this, it is not sent to the client
         packet.setRoomId(-1);
         JSONObject metadata = new JSONObject();
         metadata.put("clientID", newID);
@@ -106,6 +120,7 @@ public class PU {
         return packet;
     }
 
+
     private packet handleClosingRoom(packet packet) {
         ThrowNotHandledException(packet);
         return null;
@@ -117,23 +132,29 @@ public class PU {
     }
 
     private packet handleUpdateObject(packet packet) {
-        ThrowNotHandledException(packet);
+        Game.getInstance().acceptRequest(packet);
         return null;
     }
 
     private packet handleDestroyObject(packet packet) {
-        ThrowNotHandledException(packet);
+        Game.getInstance().acceptRequest(packet);
         return null;
     }
 
     private packet handleSpawnObject(packet packet) {
-        ThrowNotHandledException(packet);
+        Game.getInstance().acceptRequest(packet);
         return null;
     }
 
+    private packet handleFullState(packet packet) {
+        Game.getInstance().acceptRequest(packet);
+        return null;
+    }
 
     private void ThrowNotHandledException(packet packet) {
         throw new IllegalStateException("Leading to an unhandled case yet: " + packet.getType());
     }
+
+
 
 }

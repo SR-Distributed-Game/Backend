@@ -1,6 +1,5 @@
 {
   "Format": {
-    "Type": "String",
     "ClientID": "Int",
     "RoomID": "Int",
     "Metadata": {}
@@ -14,8 +13,7 @@
       "CreateRoom",
       "Closing",
       "LeavingRoom",
-      "ConnectSucces",
-      "FullState"
+      "ConnectSucces"
     ]
   }
 }

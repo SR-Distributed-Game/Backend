@@ -1,10 +1,4 @@
 {
-  "Format": {
-    "Type": "String",
-    "ClientID": "Int",
-    "RoomID": "Int",
-    "Metadata": {}
-  },
   "Enum": {
     "Type": [
       "SpawnObject",
@@ -14,8 +8,7 @@
       "CreateRoom",
       "Closing",
       "LeavingRoom",
-      "ConnectSucces",
-      "FullState"
+      "ConnectSucces"
     ]
   }
 }

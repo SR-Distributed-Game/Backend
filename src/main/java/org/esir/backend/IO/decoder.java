@@ -1,5 +1,7 @@
 package org.esir.backend.IO;
 
+import org.esir.backend.IOFormat.IOFormat;
+import org.esir.backend.IOFormat.JSONFormat;
 import org.esir.backend.Requests.packet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,7 @@ public class decoder extends IO {
         else {
             _packet = null;
             logger.error("Error reading JSON schema file: " + "Message format is not correct");
+            logger.error("Message: " + _message);
         }
     }
 
