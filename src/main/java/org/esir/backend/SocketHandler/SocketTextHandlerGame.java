@@ -47,8 +47,9 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
     @Scheduled(fixedRateString = "${SocketTextHandlerGame.fixedRate}")
     public void sendMessage() {
         if (!QueueMaster.getInstance().get_queueEncoderOut().isEmpty()) {
-            if (QueueMaster.getInstance().get_queueEncoderOut().size() == 20) {
+            if (QueueMaster.getInstance().get_queueEncoderOut().size() >= 20) {
                 logger.warn("SocketTextHandlerGame: queueEncoderOut is growing too fast");
+                logger.warn("SocketTextHandlerGame: queueEncoderOut size: " + QueueMaster.getInstance().get_queueEncoderOut().size());
             }
             String payload = QueueMaster.getInstance().get_queueEncoderOut().poll();
             sendMessageToAllSessions(payload);
