@@ -5,12 +5,15 @@ import org.esir.backend.GameEngine.Game;
 import org.esir.backend.GameEngine.GameObject;
 import org.esir.backend.GameEngine.Scene;
 import org.esir.backend.GameEngine.Serializable;
+
+import java.math.BigDecimal;
+
 public class player extends GameObject {
 
     @Serializable
     private int points;
     @Serializable
-    private int speed ;
+    private BigDecimal speed ;
 
     @Serializable
     private int clientID;
@@ -21,7 +24,7 @@ public class player extends GameObject {
     public player(){
 
         this.points = 0;
-        this.speed = 5;
+        this.speed = new BigDecimal(5);
         this.hasBeenEaten = false;
         this.AcquireNewId();
         this.addComponent(new ColliderComponent(this));
