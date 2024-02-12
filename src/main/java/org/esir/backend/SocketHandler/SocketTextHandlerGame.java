@@ -22,12 +22,12 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(SocketTextHandlerGame.class);
 
-    private ConcurrentHashMap<String, WebSocketSession> sessions;
+    private final ConcurrentHashMap<String, WebSocketSession> sessions;
 
     public SocketTextHandlerGame(ConcurrentHashMap<String, WebSocketSession> sessions) {
         this.sessions = sessions;
     }
-    private int numthreads = 10;
+    private int numthreads = 5;
     ExecutorService executorService = Executors.newFixedThreadPool(numthreads);
 
     @Override

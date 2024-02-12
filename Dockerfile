@@ -4,4 +4,4 @@ COPY . .
 
 RUN ./mvnw install
 
-CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-Xms1024m -Xmx3g"]
+CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-Xms1024M -Xmx3G"]

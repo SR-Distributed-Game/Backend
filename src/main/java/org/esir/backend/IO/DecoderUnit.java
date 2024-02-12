@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 public class DecoderUnit {
     private static final Logger log = LoggerFactory.getLogger(DecoderUnit.class);
-    private int numthreads = 10;
+    private int numthreads = 5;
     ExecutorService executorService = Executors.newFixedThreadPool(numthreads);
     List<decoder> decoders;
 
