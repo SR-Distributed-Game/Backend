@@ -3,7 +3,6 @@ package org.esir.backend.SocketHandler;
 import org.esir.backend.Transport.QueueMaster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -12,7 +11,11 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Component
 public class SocketTextHandlerGame extends TextWebSocketHandler {
@@ -24,6 +27,8 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
     public SocketTextHandlerGame(ConcurrentHashMap<String, WebSocketSession> sessions) {
         this.sessions = sessions;
     }
+    private int numthreads = 10;
+    ExecutorService executorService = Executors.newFixedThreadPool(numthreads);
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {
@@ -51,12 +56,26 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
                 logger.warn("SocketTextHandlerGame: queueEncoderOut is growing too fast");
                 logger.warn("SocketTextHandlerGame: queueEncoderOut size: " + QueueMaster.getInstance().get_queueEncoderOut().size());
             }
-            String payload = QueueMaster.getInstance().get_queueEncoderOut().poll();
-            sendMessageToAllSessions(payload);
+
+            List<String> payload = new ArrayList<String>();
+
+            for (int i = 0; i < numthreads; i++) {
+                if (!QueueMaster.getInstance().get_queueEncoderOut().isEmpty()) {
+                    String message = QueueMaster.getInstance().get_queueEncoderOut().poll();
+                    if (message != null) payload.add(message);
+                    else i--;
+                } else break;
+            }
+
+
+            for (int i = 0; i < payload.size(); i++) {
+                final int idThread = i;
+                Thread thread = new Thread(() -> sendMessageToAllSessions(payload.get(idThread)));
+                executorService.execute(thread);
+            }
         }
     }
 
-    @Async
     public void sendMessageToAllSessions(String payload) {
         sessions.values().forEach(session -> sendMessageToSession(session, payload));
     }
