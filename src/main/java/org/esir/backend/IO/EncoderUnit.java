@@ -43,9 +43,9 @@ public class EncoderUnit {
         while (running) {
             run();
             try {
-                TimeUnit.MICROSECONDS.sleep(100);
+                TimeUnit.MICROSECONDS.sleep(500);
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // réinitialise le statut d'interruption
+                Thread.currentThread().interrupt();
                 System.err.println("Interrupted while sleeping between decoder initializations");
             }
         }

@@ -50,7 +50,7 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
         while (running) {
             sendMessage();
             try {
-                TimeUnit.MICROSECONDS.sleep(100);
+                TimeUnit.MICROSECONDS.sleep(500);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // réinitialise le statut d'interruption
                 System.err.println("Interrupted while sleeping between decoder initializations");
