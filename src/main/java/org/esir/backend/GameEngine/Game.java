@@ -5,6 +5,7 @@ import org.esir.backend.Requests.packet;
 
 import java.io.Console;
 import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
@@ -52,9 +53,10 @@ public class Game extends RequestAccepter {
     }
 
     @Override
-    public void handleRemoteRequests(){
-        for(packet p : remoteRequests){
-            switch (p.getType()){
+    public void handleRemoteRequests() {
+        List<packet> copyOfRemoteRequests = new ArrayList<>(remoteRequests);
+        for (packet p : copyOfRemoteRequests) {
+            switch (p.getType()) {
                 case "SpawnObject":
                     this.handleSpawnObject(p);
                     break;
@@ -71,6 +73,7 @@ public class Game extends RequestAccepter {
         }
         remoteRequests.clear();
     }
+
 
 
     public void handleSpawnObject(packet packet){

@@ -1,5 +1,7 @@
 package org.esir.backend.ProcessUnit;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.esir.backend.GameEngine.Game;
 import org.esir.backend.ImplementedGame.SweetGameScene;
 import org.esir.backend.Requests.packet;
@@ -14,6 +16,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
@@ -23,6 +26,30 @@ public class PU {
     private final Map<Integer, Integer> _leaderboard = new HashMap<>();
     private final Map<Integer, String> _players = new HashMap<>();
 
+    private volatile boolean running = true;
+
+    @PostConstruct
+    public void init() {
+        Thread loopThread = new Thread(this::runLoop);
+        loopThread.start();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        running = false;
+    }
+
+    private void runLoop() {
+        while (running) {
+            run();
+            try {
+                TimeUnit.MICROSECONDS.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // réinitialise le statut d'interruption
+                System.err.println("Interrupted while sleeping between decoder initializations");
+            }
+        }
+    }
 
     public PU() {
         setupGame();
@@ -33,7 +60,6 @@ public class PU {
         Game.getInstance().getScene().Mstart();
     }
 
-    @Scheduled(fixedRateString = "${pu.fixedRate}")
     public void run() {
         if (!QueueMaster.getInstance().get_queuePUIn().isEmpty()) {
             packet packet = QueueMaster.getInstance().get_queuePUIn().poll();
