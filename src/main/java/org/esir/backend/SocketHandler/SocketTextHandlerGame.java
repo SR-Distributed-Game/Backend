@@ -78,32 +78,31 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
                 logger.warn("SocketTextHandlerGame: queueEncoderOut size: " + QueueMaster.getInstance().get_queueEncoderOut().size());
             }
 
+            // Cas spécial pour numthreads == 1
             if (numthreads == 1) {
-                if (!QueueMaster.getInstance().get_queueEncoderOut().isEmpty()) {
-                    String payload = QueueMaster.getInstance().get_queueEncoderOut().poll();
-                    if (payload != null) sendMessageToAllSessions(payload);
+                String message = QueueMaster.getInstance().get_queueEncoderOut().poll();
+                if (message != null) {
+                    sendMessageToAllSessions(message);
                 }
-                return;
-            }
+            } else {
+                List<String> payload = new ArrayList<>();
+                for (int i = 0; i < numthreads; i++) {
+                    if (!QueueMaster.getInstance().get_queueEncoderOut().isEmpty()) {
+                        String message = QueueMaster.getInstance().get_queueEncoderOut().poll();
+                        if (message != null) payload.add(message);
+                        else i--;
+                    } else break;
+                }
 
-            List<String> payload = new ArrayList<String>();
-
-            for (int i = 0; i < numthreads; i++) {
-                if (!QueueMaster.getInstance().get_queueEncoderOut().isEmpty()) {
-                    String message = QueueMaster.getInstance().get_queueEncoderOut().poll();
-                    if (message != null) payload.add(message);
-                    else i--;
-                } else break;
-            }
-
-
-            for (int i = 0; i < payload.size(); i++) {
-                final int idThread = i;
-                Thread thread = new Thread(() -> sendMessageToAllSessions(payload.get(idThread)));
-                executorService.execute(thread);
+                for (int i = 0; i < payload.size(); i++) {
+                    final int idThread = i;
+                    Thread thread = new Thread(() -> sendMessageToAllSessions(payload.get(idThread)));
+                    executorService.execute(thread);
+                }
             }
         }
     }
+
 
     public void sendMessageToAllSessions(String payload) {
         sessions.values().forEach(session -> sendMessageToSession(session, payload));

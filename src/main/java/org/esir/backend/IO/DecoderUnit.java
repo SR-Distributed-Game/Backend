@@ -50,46 +50,42 @@ public class DecoderUnit {
     }
 
 
-    public void run(){
-        if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()){
+    public void run() {
+        if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()) {
 
-            if (QueueMaster.getInstance().get_queueDecoderIn().size() >= 20){
+            if (QueueMaster.getInstance().get_queueDecoderIn().size() >= 20) {
                 log.warn("EncoderUnit: queueDecodeIN is growing too fast");
                 log.warn("EncoderUnit: queueDecodeIN size: " + QueueMaster.getInstance().get_queueDecoderIn().size());
             }
 
-            if (numthreads == 1){
-                if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()){
-                    String payload = QueueMaster.getInstance().get_queueDecoderIn().poll();
-                    if (payload != null) runDecoder(decoders.get(0), payload, new AtomicInteger(0), 0);
+            // Cas spécial pour numthreads == 1
+            if (numthreads == 1) {
+                String message = QueueMaster.getInstance().get_queueDecoderIn().poll();
+                if (message != null) {
+                    AtomicInteger IdOnProcess = new AtomicInteger(0);
+                    runDecoder(decoders.get(0), message, IdOnProcess, 0);
                 }
-                else return;
-
-                decoders.get(0).run();
-                packet packet = decoders.get(0).getPackets();
-                if (packet != null) QueueMaster.getInstance().get_queuePUIn().add(packet);
-                return;
-            }
-
-            List<String> payload = new ArrayList<String>();
-            for (int i = 0; i < numthreads; i++){
-                if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()){
-                    String message = QueueMaster.getInstance().get_queueDecoderIn().poll();
-                    if (message != null) payload.add(message);
-                    else i--;
+            } else {
+                List<String> payload = new ArrayList<>();
+                for (int i = 0; i < numthreads; i++) {
+                    if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()) {
+                        String message = QueueMaster.getInstance().get_queueDecoderIn().poll();
+                        if (message != null) payload.add(message);
+                        else i--;
+                    } else break;
                 }
-                else break;
-            }
 
-            AtomicInteger IdOnProcess = new AtomicInteger(0);
+                AtomicInteger IdOnProcess = new AtomicInteger(0);
 
-            for (int i = 0; i < payload.size(); i++){
-                final int idThread = i;
-                Thread thread = new Thread(() -> runDecoder(decoders.get(idThread), payload.get(idThread), IdOnProcess, idThread));
-                executorService.execute(thread);
+                for (int i = 0; i < payload.size(); i++) {
+                    final int idThread = i;
+                    Thread thread = new Thread(() -> runDecoder(decoders.get(idThread), payload.get(idThread), IdOnProcess, idThread));
+                    executorService.execute(thread);
+                }
             }
         }
     }
+
 
     private void runDecoder(decoder decoder, String payload, AtomicInteger IdOnProcess, int idThread){
         decoder.setMessage(payload);

@@ -51,47 +51,42 @@ public class EncoderUnit {
         }
     }
 
-    public void run(){
-        if (!QueueMaster.getInstance().get_queuePUOut().isEmpty()){
-            if (QueueMaster.getInstance().get_queuePUOut().size() >= 20){
+    public void run() {
+        if (!QueueMaster.getInstance().get_queuePUOut().isEmpty()) {
+            if (QueueMaster.getInstance().get_queuePUOut().size() >= 20) {
                 log.warn("EncoderUnit: queuePUOut is growing too fast");
                 log.warn("EncoderUnit: queuePUOut size: " + QueueMaster.getInstance().get_queuePUOut().size());
             }
 
-            if (numthreads == 1){
-                if (!QueueMaster.getInstance().get_queuePUOut().isEmpty()){
-                    packet message = QueueMaster.getInstance().get_queuePUOut().poll();
-                    if (message != null) encoders.get(0).setPacket(message);
-                    else return;
+            // Traitement spécial si numthreads est 1
+            if (numthreads == 1) {
+                packet message = QueueMaster.getInstance().get_queuePUOut().poll();
+                if (message != null) {
+                    AtomicInteger IdOnProcess = new AtomicInteger(0);
+                    runEncoder(encoders.getFirst(), message, IdOnProcess, 0);
                 }
-                else return;
-                encoders.get(0).run();
-                String message = encoders.get(0).getMessage();
-                if (message != null && !message.isEmpty()) QueueMaster.getInstance().get_queueEncoderOut().add(message);
-                return;
-            }
+            } else {
+                List<packet> payload = new ArrayList<packet>();
 
-            List<packet> payload = new ArrayList<packet>();
-
-            for (int i = 0; i < numthreads; i++){
-                if (!QueueMaster.getInstance().get_queuePUOut().isEmpty()){
-                    packet message = QueueMaster.getInstance().get_queuePUOut().poll();
-                    if (message != null) payload.add(message);
-                    else i--;
+                for (int i = 0; i < numthreads; i++) {
+                    if (!QueueMaster.getInstance().get_queuePUOut().isEmpty()) {
+                        packet message = QueueMaster.getInstance().get_queuePUOut().poll();
+                        if (message != null) payload.add(message);
+                        else i--;
+                    } else break;
                 }
-                else break;
+
+                AtomicInteger IdOnProcess = new AtomicInteger(0);
+
+                for (int i = 0; i < payload.size(); i++) {
+                    final int idThread = i;
+                    Thread thread = new Thread(() -> runEncoder(encoders.get(idThread), payload.get(idThread), IdOnProcess, idThread));
+                    executorService.execute(thread);
+                }
             }
-
-            AtomicInteger IdOnProcess = new AtomicInteger(0);
-
-            for (int i = 0; i < payload.size(); i++){
-                final int idThread = i;
-                Thread thread = new Thread(() -> runEncoder(encoders.get(idThread), payload.get(idThread), IdOnProcess, idThread));
-                executorService.execute(thread);
-            }
-
         }
     }
+
 
     private void runEncoder(encoder encoder, packet packet, AtomicInteger IdOnProcess, int idThread){
         encoder.setPacket(packet);
