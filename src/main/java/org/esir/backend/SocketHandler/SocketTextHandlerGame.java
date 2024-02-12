@@ -82,11 +82,13 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
 
 
     public void sendMessageToSession(WebSocketSession session, String payload) {
-        if (session != null && session.isOpen()) {
-            try {
-                session.sendMessage(new TextMessage(payload));
-            } catch (IOException e) {
-                logger.error("Error sending message", e);
+        synchronized (session) {
+            if (session.isOpen()) {
+                try {
+                    session.sendMessage(new TextMessage(payload));
+                } catch (IOException e) {
+                    logger.error("Error sending message", e);
+                }
             }
         }
     }
