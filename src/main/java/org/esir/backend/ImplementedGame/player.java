@@ -21,6 +21,9 @@ public class player extends GameObject {
     @Serializable
     private boolean hasBeenEaten;
 
+    @Serializable
+    private String color;
+
     public player(){
 
         this.points = 0;
