@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class EncoderUnit {
 
     private static final Logger log = LoggerFactory.getLogger(EncoderUnit.class);
-    private int numthreads = 8;
+    private int numthreads = 10;
     ExecutorService executorService = Executors.newFixedThreadPool(numthreads);
 
     List<encoder> encoders;
