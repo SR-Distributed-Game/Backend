@@ -51,11 +51,16 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
                 logger.warn("SocketTextHandlerGame: queueEncoderOut is growing too fast");
             }
             String payload = QueueMaster.getInstance().get_queueEncoderOut().poll();
-            sessions.values().forEach(session -> sendMessageToSession(session, payload));
+            sendMessageToAllSessions(payload);
         }
     }
 
     @Async
+    public void sendMessageToAllSessions(String payload) {
+        sessions.values().forEach(session -> sendMessageToSession(session, payload));
+    }
+
+
     public void sendMessageToSession(WebSocketSession session, String payload) {
         if (session != null && session.isOpen()) {
             try {
