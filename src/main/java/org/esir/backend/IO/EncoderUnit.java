@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class EncoderUnit {
 
     private static final Logger log = LoggerFactory.getLogger(EncoderUnit.class);
-    private int numthreads = 5;
+    private int numthreads = 1;
     ExecutorService executorService = Executors.newFixedThreadPool(numthreads);
 
     List<encoder> encoders;
@@ -56,6 +56,19 @@ public class EncoderUnit {
             if (QueueMaster.getInstance().get_queuePUOut().size() >= 20){
                 log.warn("EncoderUnit: queuePUOut is growing too fast");
                 log.warn("EncoderUnit: queuePUOut size: " + QueueMaster.getInstance().get_queuePUOut().size());
+            }
+
+            if (numthreads == 1){
+                if (!QueueMaster.getInstance().get_queuePUOut().isEmpty()){
+                    packet message = QueueMaster.getInstance().get_queuePUOut().poll();
+                    if (message != null) encoders.get(0).setPacket(message);
+                    else return;
+                }
+                else return;
+                encoders.get(0).run();
+                String message = encoders.get(0).getMessage();
+                if (message != null && !message.isEmpty()) QueueMaster.getInstance().get_queueEncoderOut().add(message);
+                return;
             }
 
             List<packet> payload = new ArrayList<packet>();

@@ -29,7 +29,7 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
     public SocketTextHandlerGame(ConcurrentHashMap<String, WebSocketSession> sessions) {
         this.sessions = sessions;
     }
-    private int numthreads = 5;
+    private int numthreads = 1;
     ExecutorService executorService = Executors.newFixedThreadPool(numthreads);
 
     private volatile boolean running = true;
@@ -76,6 +76,14 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
             if (QueueMaster.getInstance().get_queueEncoderOut().size() >= 20) {
                 logger.warn("SocketTextHandlerGame: queueEncoderOut is growing too fast");
                 logger.warn("SocketTextHandlerGame: queueEncoderOut size: " + QueueMaster.getInstance().get_queueEncoderOut().size());
+            }
+
+            if (numthreads == 1) {
+                if (!QueueMaster.getInstance().get_queueEncoderOut().isEmpty()) {
+                    String payload = QueueMaster.getInstance().get_queueEncoderOut().poll();
+                    if (payload != null) sendMessageToAllSessions(payload);
+                }
+                return;
             }
 
             List<String> payload = new ArrayList<String>();

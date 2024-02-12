@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 public class DecoderUnit {
     private static final Logger log = LoggerFactory.getLogger(DecoderUnit.class);
-    private int numthreads = 5;
+    private int numthreads = 1;
     ExecutorService executorService = Executors.newFixedThreadPool(numthreads);
     List<decoder> decoders;
 
@@ -56,6 +56,19 @@ public class DecoderUnit {
             if (QueueMaster.getInstance().get_queueDecoderIn().size() >= 20){
                 log.warn("EncoderUnit: queueDecodeIN is growing too fast");
                 log.warn("EncoderUnit: queueDecodeIN size: " + QueueMaster.getInstance().get_queueDecoderIn().size());
+            }
+
+            if (numthreads == 1){
+                if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()){
+                    String payload = QueueMaster.getInstance().get_queueDecoderIn().poll();
+                    if (payload != null) runDecoder(decoders.get(0), payload, new AtomicInteger(0), 0);
+                }
+                else return;
+
+                decoders.get(0).run();
+                packet packet = decoders.get(0).getPackets();
+                if (packet != null) QueueMaster.getInstance().get_queuePUIn().add(packet);
+                return;
             }
 
             List<String> payload = new ArrayList<String>();
