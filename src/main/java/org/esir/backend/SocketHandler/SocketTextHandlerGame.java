@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class SocketTextHandlerGame extends TextWebSocketHandler {
@@ -29,7 +30,7 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
     public SocketTextHandlerGame(ConcurrentHashMap<String, WebSocketSession> sessions) {
         this.sessions = sessions;
     }
-    private int numthreads = 1;
+    private int numthreads = 5;
     ExecutorService executorService = Executors.newFixedThreadPool(numthreads);
 
     private volatile boolean running = true;
@@ -48,6 +49,12 @@ public class SocketTextHandlerGame extends TextWebSocketHandler {
     private void runLoop() {
         while (running) {
             sendMessage();
+            try {
+                TimeUnit.MICROSECONDS.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // réinitialise le statut d'interruption
+                System.err.println("Interrupted while sleeping between decoder initializations");
+            }
         }
     }
 

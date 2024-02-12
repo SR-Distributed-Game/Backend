@@ -14,13 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class EncoderUnit {
 
     private static final Logger log = LoggerFactory.getLogger(EncoderUnit.class);
-    private int numthreads = 1;
+    private int numthreads = 5;
     ExecutorService executorService = Executors.newFixedThreadPool(numthreads);
 
     List<encoder> encoders;
@@ -41,6 +42,12 @@ public class EncoderUnit {
     private void runLoop() {
         while (running) {
             run();
+            try {
+                TimeUnit.MICROSECONDS.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // réinitialise le statut d'interruption
+                System.err.println("Interrupted while sleeping between decoder initializations");
+            }
         }
     }
 

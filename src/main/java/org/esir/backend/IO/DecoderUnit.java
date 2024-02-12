@@ -13,12 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class DecoderUnit {
     private static final Logger log = LoggerFactory.getLogger(DecoderUnit.class);
-    private int numthreads = 1;
+    private int numthreads = 5;
     ExecutorService executorService = Executors.newFixedThreadPool(numthreads);
     List<decoder> decoders;
 
@@ -46,6 +47,12 @@ public class DecoderUnit {
         decoders = new ArrayList<decoder>();
         for (int i = 0; i < numthreads; i++){
             decoders.add(new decoder(new JSONFormat("default")));
+            try {
+                TimeUnit.MICROSECONDS.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // réinitialise le statut d'interruption
+                System.err.println("Interrupted while sleeping between decoder initializations");
+            }
         }
     }
 

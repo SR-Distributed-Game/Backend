@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
@@ -41,6 +42,12 @@ public class PU {
     private void runLoop() {
         while (running) {
             run();
+            try {
+                TimeUnit.MICROSECONDS.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // réinitialise le statut d'interruption
+                System.err.println("Interrupted while sleeping between decoder initializations");
+            }
         }
     }
 
