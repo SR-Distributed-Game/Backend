@@ -1,4 +1,6 @@
 package org.esir.backend.IO;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.esir.backend.IOFormat.JSONFormat;
 import org.esir.backend.Requests.packet;
 import org.esir.backend.Transport.QueueMaster;
@@ -20,6 +22,26 @@ public class DecoderUnit {
     ExecutorService executorService = Executors.newFixedThreadPool(numthreads);
     List<decoder> decoders;
 
+    private volatile boolean running = true;
+
+
+    @PostConstruct
+    public void init() {
+        Thread loopThread = new Thread(this::runLoop);
+        loopThread.start();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        running = false;
+    }
+
+    private void runLoop() {
+        while (running) {
+            run();
+        }
+    }
+
     public DecoderUnit() {
         decoders = new ArrayList<decoder>();
         for (int i = 0; i < numthreads; i++){
@@ -28,7 +50,6 @@ public class DecoderUnit {
     }
 
 
-    @Scheduled(fixedRateString = "${DecoderUnit.fixedRate}")
     public void run(){
         if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()){
 

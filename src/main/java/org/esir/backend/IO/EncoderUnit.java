@@ -1,5 +1,7 @@
 package org.esir.backend.IO;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.esir.backend.IOFormat.JSONFormat;
 import org.esir.backend.Requests.packet;
 import org.esir.backend.Transport.QueueMaster;
@@ -23,6 +25,25 @@ public class EncoderUnit {
 
     List<encoder> encoders;
 
+    private volatile boolean running = true;
+
+    @PostConstruct
+    public void init() {
+        Thread loopThread = new Thread(this::runLoop);
+        loopThread.start();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        running = false;
+    }
+
+    private void runLoop() {
+        while (running) {
+            run();
+        }
+    }
+
     public EncoderUnit() {
         encoders = new ArrayList<encoder>();
         for (int i = 0; i < numthreads; i++){
@@ -30,7 +51,6 @@ public class EncoderUnit {
         }
     }
 
-    @Scheduled(fixedRateString = "${EncoderUnit.fixedRate}")
     public void run(){
         if (!QueueMaster.getInstance().get_queuePUOut().isEmpty()){
             if (QueueMaster.getInstance().get_queuePUOut().size() >= 20){

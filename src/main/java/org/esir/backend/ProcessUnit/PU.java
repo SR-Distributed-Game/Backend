@@ -1,5 +1,7 @@
 package org.esir.backend.ProcessUnit;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.esir.backend.GameEngine.Game;
 import org.esir.backend.ImplementedGame.SweetGameScene;
 import org.esir.backend.Requests.packet;
@@ -23,6 +25,24 @@ public class PU {
     private final Map<Integer, Integer> _leaderboard = new HashMap<>();
     private final Map<Integer, String> _players = new HashMap<>();
 
+    private volatile boolean running = true;
+
+    @PostConstruct
+    public void init() {
+        Thread loopThread = new Thread(this::runLoop);
+        loopThread.start();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        running = false;
+    }
+
+    private void runLoop() {
+        while (running) {
+            run();
+        }
+    }
 
     public PU() {
         setupGame();
@@ -33,7 +53,6 @@ public class PU {
         Game.getInstance().getScene().Mstart();
     }
 
-    @Scheduled(fixedRateString = "${pu.fixedRate}")
     public void run() {
         if (!QueueMaster.getInstance().get_queuePUIn().isEmpty()) {
             packet packet = QueueMaster.getInstance().get_queuePUIn().poll();
