@@ -1,4 +1,6 @@
 package org.esir.backend.IO;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.esir.backend.IOFormat.JSONFormat;
 import org.esir.backend.Requests.packet;
 import org.esir.backend.Transport.QueueMaster;
@@ -11,51 +13,86 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class DecoderUnit {
     private static final Logger log = LoggerFactory.getLogger(DecoderUnit.class);
-    private int numthreads = 20;
+    private int numthreads = 5;
     ExecutorService executorService = Executors.newFixedThreadPool(numthreads);
     List<decoder> decoders;
+
+    private volatile boolean running = true;
+
+
+    @PostConstruct
+    public void init() {
+        Thread loopThread = new Thread(this::runLoop);
+        loopThread.start();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        running = false;
+    }
+
+    private void runLoop() {
+        while (running) {
+            run();
+        }
+    }
 
     public DecoderUnit() {
         decoders = new ArrayList<decoder>();
         for (int i = 0; i < numthreads; i++){
             decoders.add(new decoder(new JSONFormat("default")));
+            try {
+                TimeUnit.MICROSECONDS.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // réinitialise le statut d'interruption
+                System.err.println("Interrupted while sleeping between decoder initializations");
+            }
         }
     }
 
 
-    @Scheduled(fixedRateString = "${DecoderUnit.fixedRate}")
-    public void run(){
-        if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()){
+    public void run() {
+        if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()) {
 
-            if (QueueMaster.getInstance().get_queueDecoderIn().size() >= 20){
+            if (QueueMaster.getInstance().get_queueDecoderIn().size() >= 20) {
                 log.warn("EncoderUnit: queueDecodeIN is growing too fast");
                 log.warn("EncoderUnit: queueDecodeIN size: " + QueueMaster.getInstance().get_queueDecoderIn().size());
             }
 
-            List<String> payload = new ArrayList<String>();
-            for (int i = 0; i < numthreads; i++){
-                if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()){
-                    String message = QueueMaster.getInstance().get_queueDecoderIn().poll();
-                    if (message != null) payload.add(message);
-                    else i--;
+            // Cas spécial pour numthreads == 1
+            if (numthreads == 1) {
+                String message = QueueMaster.getInstance().get_queueDecoderIn().poll();
+                if (message != null) {
+                    AtomicInteger IdOnProcess = new AtomicInteger(0);
+                    runDecoder(decoders.get(0), message, IdOnProcess, 0);
                 }
-                else break;
-            }
+            } else {
+                List<String> payload = new ArrayList<>();
+                for (int i = 0; i < numthreads; i++) {
+                    if (!QueueMaster.getInstance().get_queueDecoderIn().isEmpty()) {
+                        String message = QueueMaster.getInstance().get_queueDecoderIn().poll();
+                        if (message != null) payload.add(message);
+                        else i--;
+                    } else break;
+                }
 
-            AtomicInteger IdOnProcess = new AtomicInteger(0);
+                AtomicInteger IdOnProcess = new AtomicInteger(0);
 
-            for (int i = 0; i < payload.size(); i++){
-                final int idThread = i;
-                Thread thread = new Thread(() -> runDecoder(decoders.get(idThread), payload.get(idThread), IdOnProcess, idThread));
-                executorService.execute(thread);
+                for (int i = 0; i < payload.size(); i++) {
+                    final int idThread = i;
+                    Thread thread = new Thread(() -> runDecoder(decoders.get(idThread), payload.get(idThread), IdOnProcess, idThread));
+                    executorService.execute(thread);
+                }
             }
         }
     }
+
 
     private void runDecoder(decoder decoder, String payload, AtomicInteger IdOnProcess, int idThread){
         decoder.setMessage(payload);
